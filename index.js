@@ -104,6 +104,20 @@ window.onload = function() {
   document.querySelector('div[name="speech-speaker-foreign-submit"]').onclick = function() {
     AlpataSpeaks("I am an alpaca. there is no name yet.", 'voice-target-foreign');
   }
+
+  // 設定情報の保存と復元
+  document.querySelectorAll('input').forEach((element) => {
+    const storageItem = sessionStorage.getItem(element.name);
+    if (storageItem) {
+      element.value = storageItem;
+    }
+    element.onchange = function(event) {
+      if (element.type == 'password') {
+        return;
+      }
+      sessionStorage.setItem(event.target.name, event.target.value);
+    }
+  });
 }
 
 // 音声認識
@@ -121,13 +135,16 @@ function AlpacaRecognizer() {
     let results = event.results;
     for (let i = event.resultIndex; i < results.length; i++) {
       diagnostic.textContent = results[i][0].transcript;
-      if (results[i].isFinal) {
-        const text = diagnostic.textContent;
-        console.log('[FINAL] ' + text)
-        toOBS(text, document.querySelector('input[name="obs-text-native-source"]').value || 'native')
-        AlpataSpeaks(text, 'voice-target-native')
-        AlpataTranslate(text, AlpacaRecognizer);
+      if (!results[i].isFinal) {
+        diagnostic.classList.remove('final');
+        continue;
       }
+      diagnostic.classList.add('final');
+      const text = diagnostic.textContent;
+      console.log('[FINAL] ' + text)
+      toOBS(text, document.querySelector('input[name="obs-text-native-source"]').value || 'native')
+      AlpataSpeaks(text, 'voice-target-native')
+      AlpataTranslate(text, AlpacaRecognizer);
     }
   }
 
@@ -154,6 +171,7 @@ function AlpacaRecognizer() {
 
 function AlpataTranslate(text, nextFunc) {
   const output = document.querySelector('div[name="ForeignLang"]')
+  output.classList.remove('final');
   // 翻訳情報取得
   const apikey = document.querySelector('input[name="gas-deploy-key"]').value || 'AKfycbx76Gd_ytJJxInNVqVMUhEXpzEL1zsZpb_vRw-Z7S3ZR6n-5dM'
   const source = document.querySelector('input[name="gas-source"]').value || 'ja'
@@ -170,6 +188,7 @@ function AlpataTranslate(text, nextFunc) {
     jsonpCallback: "test",
     timeout: 10000
   }).done(function(data) {
+    output.classList.add('final');
     const translated = data["translated"]
     output.textContent = translated;
     toOBS(translated, document.querySelector('input[name="obs-text-foreign-source"]').value || 'foreign')

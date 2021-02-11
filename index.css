@@ -25,9 +25,23 @@
   margin-right: 20px;
 }
 
+.output {
+  border: 1px solid black;
+  padding: 10px;
+  font-size: large;
+  height: 25px;
+  display: inline-block;
+  color: gray;
+}
+
+.final {
+  color: black;
+}
+
 .fotter {
   font-size: small;
   position: absolute;
   bottom: 0;
+  right: 0;
   margin-bottom: 10px;
 }
