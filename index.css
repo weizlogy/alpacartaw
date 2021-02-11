@@ -1,0 +1,33 @@
+.button {
+  width: 100px;
+  height: 25px;
+  padding: 2px;
+  margin: 5px;
+  border: 2px black solid;
+  background-color: #fed8b1;
+  text-align: center;
+  font-weight: bold;
+  cursor: pointer;
+  display: inline-block;
+  user-select: none;
+}
+.button:hover {
+  background-color: orange;
+}
+.button:active {
+  background-color: darkorange;
+}
+
+.flex-container {
+  display: flex;
+}
+.flex-container > div {
+  margin-right: 20px;
+}
+
+.fotter {
+  font-size: small;
+  position: absolute;
+  bottom: 0;
+  margin-bottom: 10px;
+}

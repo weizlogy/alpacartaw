@@ -1,0 +1,107 @@
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width"/>
+    <title>GRIMSLIME - alpaca is speaking on your behalf.</title>
+
+    <link href="index.css" rel="stylesheet">
+    <script src="index.js"></script>
+  </head>
+  <body>
+    <div class="output" name="NativeLang"></div>
+    <div class="output" name="ForeignLang"></div>
+
+    <div class="flex-container" name="speech-action">
+      <div name="speech-recognition">
+        <p>SpeechRecognition</p>
+        <div class="button" name="speech-recognition-submit" style="display: inline-block;">Start<span name="speech-recognition-status" style="margin-left:5px;"></span></div>
+      </div>
+
+      <div name="speech-translate">
+        <p>Speech translate settings</p>
+        <div><span>GAS deploy key</span>
+          <input name="gas-deploy-key"/>
+        </div>
+        <div><span>NativeLang</span>
+          <input name="gas-source" style="margin-left: 34px;"/>
+        </div>
+        <div><span>ForeignLang</span>
+          <input name="gas-target" style="margin-left: 26px;"/>
+        </div>
+        <div class="button" name="speech-translate-submit">Test</div>
+      </div>
+
+      <div name="speech-speaker">
+        <p>Speech voice settings</p>
+        <div><span>Native voice</span>
+          <select name="voice-target-native"></select>
+        </div>
+        <div><span>Volume</span>
+          <input type="range" name="voice-target-native-volume" min="0" max="1" step="0.1" value="1.0" style="width: 50%;">
+        </div>
+        <div><span>Pitch</span>
+          <input type="range" name="voice-target-native-pitch" min="0.1" max="10" step="0.1" value="1.0" style="width: 50%; margin-left: 23px;">
+        </div>
+        <div><span>Rate</span>
+          <input type="range" name="voice-target-native-rate" min="0" max="2" step="0.1" value="1.0" style="width: 50%; margin-left: 24px;">
+        </div>
+        <div class="button" name="speech-speaker-native-submit">Test</div>
+
+        <div><span>Foreign voice</span>
+          <select name="voice-target-foreign"></select>
+        </div>
+        <div><span>Volume</span>
+          <input type="range" name="voice-target-foreign-volume" min="0" max="1" step="0.1" value="1.0" style="width: 50%;">
+        </div>
+        <div><span>Pitch</span>
+          <input type="range" name="voice-target-foreign-pitch" min="0.1" max="10" step="0.1" value="1.0" style="width: 50%; margin-left: 23px;">
+        </div>
+        <div><span>Rate</span>
+          <input type="range" name="voice-target-foreign-rate" min="0" max="2" step="0.1" value="1.0" style="width: 50%; margin-left: 24px;">
+        </div>
+        <div class="button" name="speech-speaker-foreign-submit">Test</div>
+      </div>
+    </div>
+
+    <div class="flex-container" name="obs-action">
+      <div name="obs-connection">
+        <p>OBS connection settings</p>
+        <div><span>IPAddr</span>
+          <input name="obs-addr" style="margin-left: 21px;"/>
+        </div>
+        <div><span>Port</span>
+          <input name="obs-port" style="margin-left: 42px;"/>
+        </div>
+        <div><span>Password</span>
+          <input name="obs-password" type="password"/>
+        </div>
+        <div>
+          <div class="button" name="obs-submit">Connect</div><span name="obs-status" style="margin-left:5px;"></span>
+        </div>
+      </div>
+
+      <div name="obs-textsource">
+        <p>OBS TextGDIPlus settings</p>
+        <div><span>NativeSource</span>
+          <input name="obs-text-native-source" style="margin-left:9px;"/>
+        </div>
+        <div><span>ForeignSource</span>
+          <input name="obs-text-foreign-source"/>
+        </div>
+      </div>
+    </div>
+
+    <div class="fotter flex-container">
+      <div><a href="https://github.com/weizlogy/grimslime">Github</div>
+      <div><a href="https://twitter.com/twilightalpaca">Twitter</div>
+    </div>
+
+  </body>
+</html>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jQuery-JSONP/2.4.0/jquery.jsonp.min.js"></script>
+
+</body>
+
+</html>
