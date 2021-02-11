@@ -65,28 +65,23 @@ window.onload = function() {
           // いる系
           const encoder = new TextEncoder()
           // secret_string = password + salt
-          crypto.subtle.digest('SHA-256', encoder.encode(password + msg['salt']))
-            .then((shash) => {
-              const secret = btoa(String.fromCharCode.apply(null, new Uint8Array(shash)))
-              // auth_response_string = secret + challenge
-              crypto.subtle.digest('SHA-256', encoder.encode(secret + msg['challenge']))
-                .then((rhash) => {
-                  const authRes = btoa(String.fromCharCode.apply(null, new Uint8Array(rhash)))
-                  socket.send(JSON.stringify({
-                    'request-type': 'Authenticate',
-                    'message-id': 'auth-req2',
-                    'auth': authRes
-                  }));
-                })
-            })
+          let shash = sha256.update(password).update(msg['salt']).digest();
+          shash = btoa(String.fromCharCode.apply(null, new Uint8Array(shash)));
+          let authRes = sha256.update(shash).update(msg['challenge']).digest();
+          authRes = btoa(String.fromCharCode.apply(null, new Uint8Array(authRes)));
+          socket.send(JSON.stringify({
+            'request-type': 'Authenticate',
+            'message-id': 'auth-req2',
+            'auth': authRes
+          }));
+          break;
+        case 'auth-req2':
+          if (msg['status'] != 'ok') {
+            status.textContent = 'is [ERROR] ' + msg['error'];
             break;
-          case 'auth-req2':
-            if (msg['status'] != 'ok') {
-              status.textContent = 'is [ERROR] ' + msg['error'];
-              break;
-            }
-            status.textContent = 'is CONNECTED';
-            break;
+          }
+          status.textContent = 'is CONNECTED';
+          break;
       }
     });
   }
