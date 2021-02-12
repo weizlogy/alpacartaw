@@ -3,7 +3,7 @@
 generAtes reaL-time subtitles in multiPle lAnguages ​​from voiCe recognition And Reads Them Aloud. 
 (with obs and obs-Websocket
 
-音声認識からリアルタイム字幕を多言語翻訳で生成し、音声合成で読み上げる。
+音声認識からリアルタイムで翻訳し、認識結果と翻訳結果を音声合成で読み上げる。
 
 OBS連携することで、音声認識した文字列と翻訳した文字列をOBS上に表示する。
 
