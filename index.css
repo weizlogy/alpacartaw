@@ -41,7 +41,14 @@
 .fotter {
   font-size: small;
   position: absolute;
-  bottom: 0;
+  top: 0;
   right: 0;
-  margin-bottom: 10px;
+  margin-top: 10px;
+}
+
+input[type="range"] {
+  width: 25em;
+}
+.item > span {
+  display: block;
 }

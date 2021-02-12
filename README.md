@@ -1,10 +1,33 @@
-# GRIMSLIME
+# ALPACARTAW
 
-Generates Real-tIMe Subtitles in multiple Languages ​​from voice recognItion and reads theM aloud. (with OBS and obs-websockEt
+generAtes reaL-time subtitles in multiPle lAnguages ​​from voiCe recognition And Reads Them Aloud. 
+(with obs and obs-Websocket
 
 音声認識からリアルタイム字幕を多言語翻訳で生成し、音声合成で読み上げる。
 
 OBS連携することで、音声認識した文字列と翻訳した文字列をOBS上に表示する。
+
+# 動作環境
+
+- Google Chrome
+
+- OBS + OBS-Websocket
+
+- localhost.run (またはngrokなど他のstunnelツール)
+
+## localhost.run の使い方
+
+OBSの動いてるPC上でコマンドプロンプトを開いて以下を実行する。
+
+```shell
+> ssh -R 80:localhost:(OBS-WebSocketで指定したポート番号) localhost.run
+```
+
+コマンドに失敗する場合は[FAQ](http://localhost.run/docs/faq)を見ること。
+
+「xxxxxx.localhost.run tunneled with tls termination」と出れば完了。
+
+ALPACARTAWから繋ぐには、IPAddrにxxxxxx.localhost.run、Portに443を指定する。
 
 # SpeechRecognition
 

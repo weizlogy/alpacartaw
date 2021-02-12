@@ -2,7 +2,7 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width"/>
-    <title>GRIMSLIME - alpaca is speaking on your behalf.</title>
+    <title>ALPACA-RTAW</title>
 
     <link href="index.css" rel="stylesheet">
 
@@ -11,6 +11,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jQuery-JSONP/2.4.0/jquery.jsonp.min.js"></script>
     <script src="index.js"></script>
   </head>
+
   <body>
     <h1>GRIMSLIME</h1>
     <p>Native output</p>
@@ -26,31 +27,33 @@
 
       <div name="speech-translate">
         <p>Speech translate settings</p>
-        <div><span>GAS deploy key</span>
-          <input name="gas-deploy-key"/>
+        <div class="item"><span>GAS deploy key</span>
+          <input type="text" name="gas-deploy-key"/>
         </div>
-        <div><span>NativeLang</span>
-          <input name="gas-source" style="margin-left: 34px;"/>
+        <div class="item"><span>NativeLang</span>
+          <input type="text" name="gas-source"/>
         </div>
-        <div><span>ForeignLang</span>
-          <input name="gas-target" style="margin-left: 26px;"/>
+        <div class="item"><span>ForeignLang</span>
+          <input type="text" name="gas-target"/>
         </div>
         <div class="button" name="speech-translate-submit">Test</div>
       </div>
+    </div>
 
+    <div>
       <div name="speech-speaker">
         <p>Speech voice settings</p>
         <div><span>Native voice</span>
           <select name="voice-target-native"></select>
         </div>
         <div><span>Volume</span>
-          <input type="range" name="voice-target-native-volume" min="0" max="1" step="0.1" value="1.0" style="width: 50%;">
+          <input type="range" name="voice-target-native-volume" min="0" max="1" step="0.1" value="1.0">
         </div>
-        <div><span>Pitch</span>
-          <input type="range" name="voice-target-native-pitch" min="0.1" max="10" step="0.1" value="1.0" style="width: 50%; margin-left: 23px;">
+        <div style="margin-left: 23px;"><span>Pitch</span>
+          <input type="range" name="voice-target-native-pitch" min="0.1" max="10" step="0.1" value="1.0">
         </div>
-        <div><span>Rate</span>
-          <input type="range" name="voice-target-native-rate" min="0" max="2" step="0.1" value="1.0" style="width: 50%; margin-left: 24px;">
+        <div style="margin-left: 24px;"><span>Rate</span>
+          <input type="range" name="voice-target-native-rate" min="0" max="2" step="0.1" value="1.0">
         </div>
         <div class="button" name="speech-speaker-native-submit">Test</div>
 
@@ -58,13 +61,13 @@
           <select name="voice-target-foreign"></select>
         </div>
         <div><span>Volume</span>
-          <input type="range" name="voice-target-foreign-volume" min="0" max="1" step="0.1" value="1.0" style="width: 50%;">
+          <input type="range" name="voice-target-foreign-volume" min="0" max="1" step="0.1" value="1.0">
         </div>
-        <div><span>Pitch</span>
-          <input type="range" name="voice-target-foreign-pitch" min="0.1" max="10" step="0.1" value="1.0" style="width: 50%; margin-left: 23px;">
+        <div style="margin-left: 23px;"><span>Pitch</span>
+          <input type="range" name="voice-target-foreign-pitch" min="0.1" max="10" step="0.1" value="1.0">
         </div>
-        <div><span>Rate</span>
-          <input type="range" name="voice-target-foreign-rate" min="0" max="2" step="0.1" value="1.0" style="width: 50%; margin-left: 24px;">
+        <div style="margin-left: 24px;"><span>Rate</span>
+          <input type="range" name="voice-target-foreign-rate" min="0" max="2" step="0.1" value="1.0">
         </div>
         <div class="button" name="speech-speaker-foreign-submit">Test</div>
       </div>
@@ -73,13 +76,13 @@
     <div class="flex-container" name="obs-action">
       <div name="obs-connection">
         <p>OBS connection settings</p>
-        <div><span>IPAddr</span>
-          <input name="obs-addr" style="margin-left: 21px;"/>
+        <div class="item"><span>IPAddr</span>
+          <input type="text" name="obs-addr"/>
         </div>
-        <div><span>Port</span>
-          <input name="obs-port" style="margin-left: 42px;"/>
+        <div class="item"><span>Port</span>
+          <input type="text" name="obs-port"/>
         </div>
-        <div><span>Password</span>
+        <div class="item"><span>Password</span>
           <input name="obs-password" type="password"/>
         </div>
         <div>
@@ -89,19 +92,19 @@
 
       <div name="obs-textsource">
         <p>OBS TextGDIPlus settings</p>
-        <div><span>NativeSource</span>
-          <input name="obs-text-native-source" style="margin-left:9px;"/>
+        <div class="item"><span>NativeSource</span>
+          <input type="text" name="obs-text-native-source"/>
         </div>
-        <div><span>ForeignSource</span>
-          <input name="obs-text-foreign-source"/>
+        <div class="item"><span>ForeignSource</span>
+          <input type="text" name="obs-text-foreign-source"/>
         </div>
       </div>
     </div>
 
     <div class="fotter flex-container">
       <div>v1.0.0</div>
-      <div><a href="https://github.com/weizlogy/grimslime">Github</div>
-      <div><a href="https://twitter.com/twilightalpaca">Twitter</div>
+      <div><a target="_blank" href="https://github.com/weizlogy/alpacarataw">Github</div>
+      <div><a target="_blank" href="https://twitter.com/twilightalpaca">Twitter</div>
     </div>
 
   </body>
