@@ -4,7 +4,7 @@ var SpeechRecognitionEvent = SpeechRecognitionEvent || webkitSpeechRecognitionEv
 
 var socket = null;
 
-window.onload = function() {
+window.addEventListener('DOMContentLoaded', function() {
   console.log('loaded.');
   // 音声合成のVOICE一覧生成
   speechSynthesis.onvoiceschanged = () => {
@@ -35,11 +35,11 @@ window.onload = function() {
     const password = document.querySelector('input[name="obs-password"]').value
 
     // 接続
-    socket = new WebSocket(`wss://${ipaddr}:${port}`)
+    socket = new WebSocket(`wss://${ipaddr}:${port}`);
 
     socket.addEventListener('error', function (error) {
       console.log('[ERROR] ', error);
-    })
+    });
 
     // ソケットが開いたら認証開始
     socket.addEventListener('open', function (event) {
@@ -113,7 +113,7 @@ window.onload = function() {
       sessionStorage.setItem(event.target.name, event.target.value);
     }
   });
-}
+});
 
 // 音声認識
 function AlpacaRecognizer() {
