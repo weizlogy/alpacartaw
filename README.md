@@ -1,4 +1,4 @@
-# ALPACARTAW
+# ALPACA-RTAW
 
 generAtes reaL-time subtitles in multiPle lAnguages ​​from voiCe recognition And Reads Them Aloud. 
 (with obs and obs-Websocket
