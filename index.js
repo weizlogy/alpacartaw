@@ -37,8 +37,8 @@ window.addEventListener('DOMContentLoaded', function() {
     });
   };
   // これでonvoiceschangedを発火する
-  // Android Chromeはspeakしないとだめっぽい
-  speechSynthesis.speak(new SpeechSynthesisUtterance());
+  // 空speakはDEPRECATEされてるので
+  speechSynthesis.getVoices();
 
   // OBSのいろいろ
   document.querySelector('div[name="obs-submit"]').onclick = function() {
@@ -123,7 +123,7 @@ function AlpacaRecognizer() {
   let recognition = new SpeechRecognition();
   recognition.continuous = true;
   recognition.lang = 'ja-JP';
-  recognition.interimResults = true;
+  recognition.interimResults = false;  // androidだとまだだめっぽい
   
   let detected = false;
 
@@ -205,11 +205,13 @@ function AlpataTranslate(text, useSpeak, nextFunc) {
 
 function AlpataSpeaks(text, targetName) {
   const selectbox = document.querySelector(`select[name="${targetName}"]`)
+  const voice = speechSynthesis.getVoices()[selectbox.selectedIndex];
   const utter = new SpeechSynthesisUtterance(text);
   utter.volume = document.querySelector(`input[name="${targetName}-volume"]`).value
   utter.pitch = document.querySelector(`input[name="${targetName}-pitch"]`).value
   utter.rate = document.querySelector(`input[name="${targetName}-rate"]`).value
-  utter.voice = speechSynthesis.getVoices()[selectbox.selectedIndex];
+  utter.voice = voice;
+  utter.lang = voice.lang;
   speechSynthesis.speak(utter);
 }
 
