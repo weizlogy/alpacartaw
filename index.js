@@ -91,7 +91,7 @@ window.onload = function() {
     AlpacaRecognizer();
   }
   document.querySelector('div[name="speech-translate-submit"]').onclick = function() {
-    AlpataTranslate("吾輩はアルパカである。名前はまだない。", () => {});
+    AlpataTranslate("吾輩はアルパカである。名前はまだない。", false, () => {});
   }
   document.querySelector('div[name="speech-speaker-native-submit"]').onclick = function() {
     AlpataSpeaks("吾輩はアルパカである。名前はまだない。", 'voice-target-native');
@@ -138,8 +138,7 @@ function AlpacaRecognizer() {
       const text = diagnostic.textContent;
       console.log('[FINAL] ' + text)
       toOBS(text, document.querySelector('input[name="obs-text-native-source"]').value || 'native')
-      AlpataSpeaks(text, 'voice-target-native')
-      AlpataTranslate(text, AlpacaRecognizer);
+      AlpataTranslate(text, true, AlpacaRecognizer);
     }
   }
 
@@ -164,7 +163,7 @@ function AlpacaRecognizer() {
   }
 }
 
-function AlpataTranslate(text, nextFunc) {
+function AlpataTranslate(text, useSpeak, nextFunc) {
   const output = document.querySelector('div[name="ForeignLang"]')
   output.classList.remove('final');
   // 翻訳情報取得
@@ -187,7 +186,10 @@ function AlpataTranslate(text, nextFunc) {
     const translated = data["translated"]
     output.textContent = translated;
     toOBS(translated, document.querySelector('input[name="obs-text-foreign-source"]').value || 'foreign')
-    AlpataSpeaks(translated, 'voice-target-foreign')
+    if (useSpeak) {
+      AlpataSpeaks(text, 'voice-target-native');
+      AlpataSpeaks(translated, 'voice-target-foreign');
+    }
     nextFunc();
   })
   .fail(function(data) {
