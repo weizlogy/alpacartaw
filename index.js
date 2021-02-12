@@ -8,6 +8,7 @@ window.addEventListener('DOMContentLoaded', function() {
   console.log('loaded.');
   // 音声合成のVOICE一覧生成
   speechSynthesis.onvoiceschanged = () => {
+    console.log('onvoiceschanged.');
     const createVoiceList = function(target) {
       const selectbox = document.querySelector(target)
       const voices = speechSynthesis.getVoices();
@@ -20,8 +21,24 @@ window.addEventListener('DOMContentLoaded', function() {
     }
     createVoiceList('select[name="voice-target-native"]');
     createVoiceList('select[name="voice-target-foreign"]');
+
+    // 設定情報の保存と復元がイベントより早いと困るので
+    document.querySelectorAll('input, select').forEach((element) => {
+      const storageItem = sessionStorage.getItem(element.name);
+      if (storageItem) {
+        element.value = storageItem;
+      }
+      element.onchange = function(event) {
+        if (element.type == 'password') {
+          return;
+        }
+        sessionStorage.setItem(event.target.name, event.target.value);
+      }
+    });
   };
-  new SpeechSynthesisUtterance();  // これでonvoiceschangedを発火する
+  // これでonvoiceschangedを発火する
+  // Android Chromeはspeakしないとだめっぽい
+  speechSynthesis.speak(new SpeechSynthesisUtterance());
 
   // OBSのいろいろ
   document.querySelector('div[name="obs-submit"]').onclick = function() {
@@ -99,20 +116,6 @@ window.addEventListener('DOMContentLoaded', function() {
   document.querySelector('div[name="speech-speaker-foreign-submit"]').onclick = function() {
     AlpataSpeaks("I am an alpaca. there is no name yet.", 'voice-target-foreign');
   }
-
-  // 設定情報の保存と復元
-  document.querySelectorAll('input').forEach((element) => {
-    const storageItem = sessionStorage.getItem(element.name);
-    if (storageItem) {
-      element.value = storageItem;
-    }
-    element.onchange = function(event) {
-      if (element.type == 'password') {
-        return;
-      }
-      sessionStorage.setItem(event.target.name, event.target.value);
-    }
-  });
 });
 
 // 音声認識
@@ -131,6 +134,7 @@ function AlpacaRecognizer() {
     for (let i = event.resultIndex; i < results.length; i++) {
       diagnostic.textContent = results[i][0].transcript;
       if (!results[i].isFinal) {
+        console.log(diagnostic.textContent)
         diagnostic.classList.remove('final');
         continue;
       }
@@ -143,6 +147,7 @@ function AlpacaRecognizer() {
   }
 
   recognition.onspeechend = function() {
+    recognition.stop();
     AlpacaRecognizer();
   }
 
@@ -219,4 +224,8 @@ function toOBS(text, sourceName) {
     'source': sourceName,
     'text': text
   }));
+}
+
+function test() {
+  // jsonpcallback dummy
 }
