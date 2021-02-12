@@ -31,6 +31,12 @@ ALPACARTAWから繋ぐには、IPAddrにxxxxxx.localhost.run、Portに443を指�
 
 # SpeechRecognition
 
+## Recognize lang
+
+音声認識する言語を設定する。
+
+デフォルト：ja_JP
+
 ## Start
 
 音声認識を開始する。
@@ -54,13 +60,13 @@ function doGet(e) {
 }
 ```
 
-## NativeLang
+## Native lang
 
 母国語を設定する。
 
 デフォルト：ja
 
-## ForeignLang
+## Foreign lang
 
 翻訳対象の言語を設定する。
 
@@ -174,13 +180,13 @@ OBSとの接続に失敗した。
 
 # OBS TextGDIPlus settings
 
-## NativeSource
+## Native source
 
 母国語表示用のOBSのテキストソース名を設定する。
 
 デフォルト：Native
 
-## ForeignSource
+## Foreign source
 
 翻訳対象の言語のOBSのテキストソース名を設定する。
 

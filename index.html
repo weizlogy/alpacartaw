@@ -21,7 +21,10 @@
 
     <div class="flex-container" name="speech-action">
       <div name="speech-recognition">
-        <p>SpeechRecognition</p>
+        <p>Speech recognition</p>
+        <div class="item"><span>Recognize lang</span>
+          <input type="text" name="speech-recognition-lang"/>
+        </div>
         <div class="button" name="speech-recognition-submit" style="display: inline-block;">Start<span name="speech-recognition-status" style="margin-left:5px;"></span></div>
       </div>
 
@@ -30,10 +33,10 @@
         <div class="item"><span>GAS deploy key</span>
           <input type="text" name="gas-deploy-key"/>
         </div>
-        <div class="item"><span>NativeLang</span>
+        <div class="item"><span>Native lang</span>
           <input type="text" name="gas-source"/>
         </div>
-        <div class="item"><span>ForeignLang</span>
+        <div class="item"><span>Foreign lang</span>
           <input type="text" name="gas-target"/>
         </div>
         <div class="button" name="speech-translate-submit">Test</div>
@@ -92,10 +95,10 @@
 
       <div name="obs-textsource">
         <p>OBS TextGDIPlus settings</p>
-        <div class="item"><span>NativeSource</span>
+        <div class="item"><span>Native source</span>
           <input type="text" name="obs-text-native-source"/>
         </div>
-        <div class="item"><span>ForeignSource</span>
+        <div class="item"><span>Foreign source</span>
           <input type="text" name="obs-text-foreign-source"/>
         </div>
       </div>

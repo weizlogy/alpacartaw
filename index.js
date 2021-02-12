@@ -121,11 +121,10 @@ window.addEventListener('DOMContentLoaded', function() {
 // 音声認識
 function AlpacaRecognizer() {
   let recognition = new SpeechRecognition();
-  recognition.continuous = true;
-  recognition.lang = 'ja-JP';
+  recognition.lang =
+    document.querySelector('input[name="speech-recognition-lang"]').value || 'ja-JP';
+  recognition.continuous = false;
   recognition.interimResults = false;  // androidだとまだだめっぽい
-  
-  let detected = false;
 
   let diagnostic = document.querySelector('div[name="NativeLang"]');
 
