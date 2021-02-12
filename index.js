@@ -35,7 +35,7 @@ window.onload = function() {
     const password = document.querySelector('input[name="obs-password"]').value
 
     // 接続
-    socket = new WebSocket(`ws://${ipaddr}:${port}`)
+    socket = new WebSocket(`wss://${ipaddr}:${port}`)
 
     socket.addEventListener('error', function (error) {
       console.log('[ERROR] ', error);
