@@ -141,23 +141,13 @@ function AlpacaRecognizer() {
       const text = diagnostic.textContent;
       console.log('[FINAL] ' + text)
       toOBS(text, document.querySelector('input[name="obs-text-native-source"]').value || 'native')
-      AlpataTranslate(text, true, AlpacaRecognizer);
+      AlpataTranslate(text, true, () => {});
     }
   }
 
-  recognition.onspeechend = function() {
-    recognition.stop();
-    AlpacaRecognizer();
-  }
-
-  recognition.onnomatch = function(event) {
-    recognition.abort();
-    AlpacaRecognizer();
-  }
-
-  recognition.onerror = function(event) {
-    recognition.abort();
-    AlpacaRecognizer();
+  recognition.onend = function(event) {
+    console.log('onend')
+    setTimeout(() => { AlpacaRecognizer(); }, 1000);
   }
 
   try {
