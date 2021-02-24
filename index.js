@@ -4,6 +4,8 @@ var SpeechRecognitionEvent = SpeechRecognitionEvent || webkitSpeechRecognitionEv
 
 var socket = null;
 
+var timeoutid = -1;
+
 window.addEventListener('DOMContentLoaded', function() {
   console.log('loaded.');
   // 音声合成のVOICE一覧生成
@@ -147,7 +149,7 @@ function AlpacaRecognizer() {
 
   recognition.onend = function(event) {
     console.log('onend')
-    setTimeout(() => { AlpacaRecognizer(); }, 1000);
+    setTimeout(() => { AlpacaRecognizer(); }, 100);
   }
 
   try {
@@ -215,6 +217,32 @@ function toOBS(text, sourceName) {
     'source': sourceName,
     'text': text
   }));
+
+  if (text == '') {
+    return;
+  }
+
+  // 一定時間で字幕を消す対応
+  let timeout = parseInt(document.querySelector(`input[name="obs-text-timeout"]`).value, 10);
+  if (isNaN(timeout)) {
+    // 未設定なら消さない
+    return;
+  }
+  if (timeout < 1000) {
+    // 早すぎるのはどうかと思う
+    timeout = 5000;
+  }
+  console.log(timeout)
+  if (timeoutid == -1) {
+    console.log('timeout clear')
+    // タイマー動作中ならキャンセルして再生成する
+    clearTimeout(timeoutid);
+  }
+  timeoutid = setTimeout(() => {
+    console.log('timeout move')
+    toOBS('', sourceName);
+    timeoutid = -1;
+  }, timeout);
 }
 
 function test() {
