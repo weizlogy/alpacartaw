@@ -6,6 +6,8 @@ var socket = null;
 
 var timeoutid = -1;
 
+var isRecognizing = false;
+
 window.addEventListener('DOMContentLoaded', function() {
   console.log('loaded.');
   // 音声合成のVOICE一覧生成
@@ -26,15 +28,14 @@ window.addEventListener('DOMContentLoaded', function() {
 
     // 設定情報の保存と復元がイベントより早いと困るので
     document.querySelectorAll('input, select').forEach((element) => {
-      const storageItem = sessionStorage.getItem(element.name);
+      let store = (element.type == 'password') ? sessionStorage : localStorage;
+      const storageItem = store.getItem(element.name);
       if (storageItem) {
         element.value = storageItem;
       }
       element.onchange = function(event) {
-        if (element.type == 'password') {
-          return;
-        }
-        sessionStorage.setItem(event.target.name, event.target.value);
+        ((element.type == 'password') ? sessionStorage : localStorage).setItem(
+          event.target.name, event.target.value);
       }
     });
   };
@@ -46,8 +47,9 @@ window.addEventListener('DOMContentLoaded', function() {
   document.querySelector('div[name="obs-submit"]').onclick = function() {
     console.log('obs-submitted.');
     // ステータス表示領域
-    const status = document.querySelector('span[name="obs-status"]');
-    status.textContent = '';
+    const status = document.querySelector('div[name="obs-submit"]');
+    status.classList.remove('status-ok');
+    status.classList.remove('status-ng');
     // 接続情報取得
     const ipaddr = document.querySelector('input[name="obs-addr"]').value || 'localhost'
     const port = document.querySelector('input[name="obs-port"]').value || '4444'
@@ -57,12 +59,13 @@ window.addEventListener('DOMContentLoaded', function() {
     socket = new WebSocket(`wss://${ipaddr}:${port}`);
 
     socket.addEventListener('error', function (error) {
-      console.log('[ERROR] ', error);
+      status.setAttribute('title', error);
+      status.classList.add('status-ng');
     });
 
     // ソケットが開いたら認証開始
     socket.addEventListener('open', function (event) {
-      status.textContent = 'is OPEN';
+      status.attributes.add('title', 'OPEN');
       socket.send(JSON.stringify({
         'request-type': 'GetAuthRequired',
         'message-id': 'auth-req1'
@@ -78,11 +81,11 @@ window.addEventListener('DOMContentLoaded', function() {
         case 'auth-req1':
           // 認証いらない系
           if (!msg['authRequired']) {
-            status.textContent = 'is CONNECTED';
+            status.setAttribute('title', 'CONNECTED');
+            status.classList.add('status-ok');
             break;
           }
           // いる系
-          const encoder = new TextEncoder()
           // secret_string = password + salt
           let shash = sha256.update(password).update(msg['salt']).digest();
           shash = btoa(String.fromCharCode.apply(null, new Uint8Array(shash)));
@@ -96,10 +99,12 @@ window.addEventListener('DOMContentLoaded', function() {
           break;
         case 'auth-req2':
           if (msg['status'] != 'ok') {
-            status.textContent = 'is [ERROR] ' + msg['error'];
+            status.setAttribute('title', msg['error']);
+            status.classList.add('status-ng');
             break;
           }
-          status.textContent = 'is CONNECTED';
+          status.setAttribute('title', 'CONNECTED');
+          status.classList.add('status-ok');
           break;
       }
     });
@@ -107,10 +112,25 @@ window.addEventListener('DOMContentLoaded', function() {
   
   // 音声認識のいろいろ
   document.querySelector('div[name="speech-recognition-submit"]').onclick = function() {
-    AlpacaRecognizer();
+    // ステータス表示領域
+    const status = document.querySelector('div[name="speech-recognition-submit"]');
+    status.classList.remove('status-ok');
+    status.classList.remove('status-ng');
+    status.textContent = 'Start'
+
+    isRecognizing = !isRecognizing;
+
+    if (!isRecognizing) {
+      return;
+    }
+
+    AlpacaRecognizer(isRecognizing);
+
+    status.textContent = 'Starting'
+    status.classList.add('status-ok');
   }
   document.querySelector('div[name="speech-translate-submit"]').onclick = function() {
-    AlpataTranslate("吾輩はアルパカである。名前はまだない。", false, () => {});
+    AlpataTranslate("吾輩はアルパカである。名前はまだない。", false);
   }
   document.querySelector('div[name="speech-speaker-native-submit"]').onclick = function() {
     AlpataSpeaks("吾輩はアルパカである。名前はまだない。", 'voice-target-native');
@@ -120,8 +140,11 @@ window.addEventListener('DOMContentLoaded', function() {
   }
 });
 
-// 音声認識
+/**
+ * 音声認識処理.
+ */
 function AlpacaRecognizer() {
+  // 音声認識初期化
   let recognition = new SpeechRecognition();
   recognition.lang =
     document.querySelector('input[name="speech-recognition-lang"]').value || 'ja-JP';
@@ -130,6 +153,7 @@ function AlpacaRecognizer() {
 
   let diagnostic = document.querySelector('div[name="NativeLang"]');
 
+  // 音声認識に成功したハンドラー
   recognition.onresult = function(event) {
     let results = event.results;
     for (let i = event.resultIndex; i < results.length; i++) {
@@ -143,12 +167,16 @@ function AlpacaRecognizer() {
       const text = diagnostic.textContent;
       console.log('[FINAL] ' + text)
       toOBS(text, document.querySelector('input[name="obs-text-native-source"]').value || 'native')
-      AlpataTranslate(text, true, () => {});
+      AlpataTranslate(text, true);
     }
   }
 
+  // 最後に必ず呼ばれるハンドラー
   recognition.onend = function(event) {
     console.log('onend')
+    if (!isRecognizing) {
+      return;
+    }
     setTimeout(() => { AlpacaRecognizer(); }, 100);
   }
 
@@ -159,7 +187,12 @@ function AlpacaRecognizer() {
   }
 }
 
-function AlpataTranslate(text, useSpeak, nextFunc) {
+/**
+ * 母国語を外国語に翻訳する.
+ * @param {string} text 翻訳対象
+ * @param {boolean} useSpeak true：Speakする / false：しない
+ */
+function AlpataTranslate(text, useSpeak) {
   const output = document.querySelector('div[name="ForeignLang"]')
   output.classList.remove('final');
   // 翻訳情報取得
@@ -194,6 +227,11 @@ function AlpataTranslate(text, useSpeak, nextFunc) {
   });
 }
 
+/**
+ * 音声合成処理.
+ * @param {string} text speakする文字列
+ * @param {string} targetName Native / Foreign (母国語か外国語か)
+ */
 function AlpataSpeaks(text, targetName) {
   const selectbox = document.querySelector(`select[name="${targetName}"]`)
   const voice = speechSynthesis.getVoices()[selectbox.selectedIndex];
@@ -206,6 +244,11 @@ function AlpataSpeaks(text, targetName) {
   speechSynthesis.speak(utter);
 }
 
+/**
+ * OBSのテキストソースに文字列を表示させる.
+ * @param {string} text 表示させたい文字列
+ * @param {string} sourceName OBSのテキストソース名
+ */
 function toOBS(text, sourceName) {
   if (socket == null || socket.readyState != 1) {
     console.log('websocket is not ready.');
@@ -245,6 +288,5 @@ function toOBS(text, sourceName) {
   }, timeout);
 }
 
-function test() {
-  // jsonpcallback dummy
-}
+/** JSONP用のダミーコールバック. */
+function test() { }

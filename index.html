@@ -21,15 +21,15 @@
 
     <div class="flex-container" name="speech-action">
       <div name="speech-recognition">
-        <p>Speech recognition</p>
+        <h3>Speech recognition</h3>
         <div class="item"><span>Recognize lang</span>
           <input type="text" name="speech-recognition-lang"/>
         </div>
-        <div class="button" name="speech-recognition-submit" style="display: inline-block;">Start<span name="speech-recognition-status" style="margin-left:5px;"></span></div>
+        <div class="button" name="speech-recognition-submit" style="display: inline-block;">Start</div>
       </div>
 
       <div name="speech-translate">
-        <p>Speech translate settings</p>
+        <h3>Speech translate settings</h3>
         <div class="item"><span>GAS deploy key</span>
           <input type="text" name="gas-deploy-key"/>
         </div>
@@ -45,7 +45,7 @@
 
     <div>
       <div name="speech-speaker">
-        <p>Speech voice settings</p>
+        <h3>Speech voice settings</h3>
         <div><span>Native voice</span>
           <select name="voice-target-native"></select>
         </div>
@@ -78,7 +78,7 @@
 
     <div class="flex-container" name="obs-action">
       <div name="obs-connection">
-        <p>OBS connection settings</p>
+        <h3>OBS connection settings</h3>
         <div class="item"><span>IPAddr</span>
           <input type="text" name="obs-addr"/>
         </div>
@@ -89,12 +89,12 @@
           <input name="obs-password" type="password"/>
         </div>
         <div>
-          <div class="button" name="obs-submit">Connect</div><span name="obs-status" style="margin-left:5px;"></span>
+          <div class="button" name="obs-submit">Connect</div>
         </div>
       </div>
 
       <div name="obs-textsource">
-        <p>OBS TextGDIPlus settings</p>
+        <h3>OBS TextGDIPlus settings</h3>
         <div class="item"><span>Native source</span>
           <input type="text" name="obs-text-native-source"/>
         </div>
@@ -107,8 +107,15 @@
       </div>
     </div>
 
+    <div name="explaination" style="margin-top: 100px;">
+      <h2>これは何？</h2>
+      <p>音声認識からリアルタイムで翻訳し、認識結果と翻訳結果を音声合成で読み上げます。</p>
+      <p>OBS連携することで、音声認識した文字列と翻訳した文字列をOBS上に表示できます。</p>
+      <p>使い方は Github 参照のこと。</p>
+    </div>
+
     <div class="fotter flex-container">
-      <div>v1.1.0</div>
+      <div>v1.1.1</div>
       <div><a target="_blank" href="https://github.com/weizlogy/alpacartaw">Github</div>
       <div><a target="_blank" href="https://twitter.com/twilightalpaca">Twitter</div>
     </div>

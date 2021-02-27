@@ -52,3 +52,11 @@ input[type="range"] {
 .item > span {
   display: block;
 }
+
+.status-ok {
+  color: darkgreen;
+}
+
+.status-ng {
+  color: red;
+}
