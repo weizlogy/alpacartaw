@@ -65,7 +65,7 @@ window.addEventListener('DOMContentLoaded', function() {
 
     // ソケットが開いたら認証開始
     socket.addEventListener('open', function (event) {
-      status.attributes.add('title', 'OPEN');
+      status.setAttribute('title', 'OPEN');
       socket.send(JSON.stringify({
         'request-type': 'GetAuthRequired',
         'message-id': 'auth-req1'
