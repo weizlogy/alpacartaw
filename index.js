@@ -219,11 +219,9 @@ function AlpataTranslate(text, useSpeak) {
       AlpataSpeaks(text, 'voice-target-native');
       AlpataSpeaks(translated, 'voice-target-foreign');
     }
-    nextFunc();
   })
   .fail(function(data) {
     output.textContent = "[ERROR] " + data;
-    nextFunc();
   });
 }
 
