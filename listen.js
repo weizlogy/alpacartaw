@@ -1,6 +1,5 @@
-// Chrome対応らしい
-var SpeechRecognition = SpeechRecognition || webkitSpeechRecognition
-var SpeechRecognitionEvent = SpeechRecognitionEvent || webkitSpeechRecognitionEvent
+window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+window.SpeechRecognitionEvent = window.SpeechRecognitionEvent || window.webkitSpeechRecognitionEvent;
 
 class RTAWListener {
 
@@ -27,6 +26,7 @@ class RTAWListener {
           self.ontrying(text);
           continue;
         }
+        // 完了イベント呼び出し
         self.ondone(text);
       }
     }
@@ -36,7 +36,7 @@ class RTAWListener {
     }
   };
 
-  start = (lang) => {
+  start = async (lang) => {
     this.#recognition.lang = lang;
     this.#recognition.start();
   };
