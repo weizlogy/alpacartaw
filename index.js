@@ -118,7 +118,7 @@ window.addEventListener('DOMContentLoaded', function() {
       if (!listener.isRecognizing) {
         return;
       }
-      setTimeout(() => { listener.start(lang); }, 100);
+      setTimeout(() => { listener.start(lang); }, 10);
     };
     listener.start(lang);
 
