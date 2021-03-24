@@ -25,9 +25,17 @@ window.addEventListener('DOMContentLoaded', function() {
       let store = (element.type == 'password') ? sessionStorage : localStorage;
       const storageItem = store.getItem(element.name);
       if (storageItem) {
-        element.value = storageItem;
+        if (element.type == 'checkbox' && storageItem) {
+          element.checked = storageItem.toLowerCase() === 'true';
+        } else {
+          element.value = storageItem;
+        }
       }
       element.onchange = function(event) {
+        if (element.type == 'checkbox') {
+          localStorage.setItem(event.target.name, event.target.checked);
+          return;
+        }
         ((element.type == 'password') ? sessionStorage : localStorage).setItem(
           event.target.name, event.target.value);
       }
@@ -90,6 +98,11 @@ window.addEventListener('DOMContentLoaded', function() {
       let diagnostic = document.querySelector('div[name="NativeLang"]');
       diagnostic.classList.remove('final');
       diagnostic.textContent = text;
+      if (document.querySelector('input[name="obs-use-interim"]').checked) {
+        obssocket.toOBS(text,
+          document.querySelector('input[name="obs-text-native-source"]').value || 'native',
+          parseInt(document.querySelector(`input[name="obs-text-timeout"]`).value, 10));
+      }
     };
     listener.ondone = (text) => {
       console.log(text)
@@ -118,7 +131,7 @@ window.addEventListener('DOMContentLoaded', function() {
       if (!listener.isRecognizing) {
         return;
       }
-      setTimeout(() => { listener.start(lang); }, 10);
+      setTimeout(() => { listener.start(lang); }, 100);
     };
     listener.start(lang);
 

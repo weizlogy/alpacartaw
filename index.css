@@ -49,8 +49,15 @@
 input[type="range"] {
   width: 25em;
 }
+
+.item {
+  margin-bottom: 5px;
+}
 .item > span {
   display: block;
+}
+.item > label > span {
+  margin-left: 5px;
 }
 
 .status-ok {

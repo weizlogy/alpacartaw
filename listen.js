@@ -15,8 +15,12 @@ class RTAWListener {
     const self = this;
     // 音声認識初期化
     this.#recognition = new SpeechRecognition();
-    this.#recognition.continuous = false;
-    this.#recognition.interimResults = false;  // androidだとまだだめっぽい
+
+    // UAがWindowsなら機能を有効にする
+    // androidだとまだだめっぽいので...
+    const isuawin = window.navigator.userAgent.toLowerCase().indexOf('windows') > -1;
+    this.#recognition.continuous = isuawin;
+    this.#recognition.interimResults = isuawin;
 
     this.#recognition.onresult = function(event) {
       const results = event.results;
