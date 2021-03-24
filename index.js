@@ -101,7 +101,8 @@ window.addEventListener('DOMContentLoaded', function() {
       if (document.querySelector('input[name="obs-use-interim"]').checked) {
         obssocket.toOBS(text,
           document.querySelector('input[name="obs-text-native-source"]').value || 'native',
-          parseInt(document.querySelector(`input[name="obs-text-timeout"]`).value, 10));
+          parseInt(document.querySelector(`input[name="obs-text-timeout"]`).value, 10),
+          true);
       }
     };
     listener.ondone = (text) => {
@@ -116,7 +117,8 @@ window.addEventListener('DOMContentLoaded', function() {
         // OBSに送信するけど別に待たなくていい
         obssocket.toOBS(text,
           document.querySelector('input[name="obs-text-native-source"]').value || 'native',
-          parseInt(document.querySelector(`input[name="obs-text-timeout"]`).value, 10));
+          parseInt(document.querySelector(`input[name="obs-text-timeout"]`).value, 10),
+          false);
         // 読み上げる
         AlpataSpeaks(text, 'voice-target-native');
         // 翻訳情報取得
@@ -156,7 +158,8 @@ window.addEventListener('DOMContentLoaded', function() {
     // OBSに送信するけど別に待たなくていいですはい
     obssocket.toOBS(translated,
       document.querySelector('input[name="obs-text-foreign-source"]').value || 'foreign',
-      parseInt(document.querySelector(`input[name="obs-text-timeout"]`).value, 10));
+      parseInt(document.querySelector(`input[name="obs-text-timeout"]`).value, 10),
+      false);
     // 読み上げる
     AlpataSpeaks(translated, 'voice-target-foreign');
   };

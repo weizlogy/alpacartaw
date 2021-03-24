@@ -66,7 +66,7 @@ class RTAWOBSWebSocket {
     });
   };
 
-  toOBS = async (text, sourceName, timeout) => {
+  toOBS = async (text, sourceName, timeout, interim) => {
     const self = this;
 
     return new Promise((resolve, reject) => {
@@ -74,11 +74,20 @@ class RTAWOBSWebSocket {
         resolve('websocket is not ready.');
         return;
       }
+
+      this.#socket.send(JSON.stringify({
+        'request-type': 'SetSourceFilterVisibility',
+        'message-id': 'setsourcefiltervisibility-req',
+        'sourceName': sourceName,
+        'filterName': 'rtawfilter',
+        'filterEnabled': interim
+      }));
+
       this.#socket.send(JSON.stringify({
         'request-type': 'SetTextGDIPlusProperties',
         'message-id': 'settextgdi-req',
         'source': sourceName,
-        'text': text
+        'text': text,
       }));
 
       if (text == '') {
