@@ -66,6 +66,14 @@ class RTAWOBSWebSocket {
     });
   };
 
+  /**
+   * OBSへのテキスト送出
+   * @param {*} text 送出文字列
+   * @param {*} sourceName 出力先
+   * @param {*} timeout 消すまでの時間
+   * @param {*} interim 音声認識途中経過か？（true: はい / false: いいえ）
+   * @returns Promise
+   */
   toOBS = async (text, sourceName, timeout, interim) => {
     const self = this;
 
@@ -90,7 +98,8 @@ class RTAWOBSWebSocket {
         'text': text,
       }));
 
-      if (text == '') {
+      // 
+      if (text == '' || interim) {
         resolve('');
         return;
       }

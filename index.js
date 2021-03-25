@@ -99,12 +99,15 @@ window.addEventListener('DOMContentLoaded', function() {
       diagnostic.classList.remove('final');
       diagnostic.textContent = text;
       if (document.querySelector('input[name="obs-use-interim"]').checked) {
-        obssocket.toOBS(text,
-          document.querySelector('input[name="obs-text-native-source"]').value || 'native',
-          parseInt(document.querySelector(`input[name="obs-text-timeout"]`).value, 10),
-          true);
+        setTimeout(() => {
+          obssocket.toOBS(text,
+            document.querySelector('input[name="obs-text-native-source"]').value || 'native',
+            parseInt(document.querySelector(`input[name="obs-text-timeout"]`).value, 10),
+            true);
+        }, parseInt(document.querySelector('input[name="obs-text-delay"]').value, 10) || 1);
       }
     };
+
     listener.ondone = (text) => {
       console.log(text)
       let diagnostic = document.querySelector('div[name="NativeLang"]');
@@ -128,6 +131,7 @@ window.addEventListener('DOMContentLoaded', function() {
         translate.exec(text, apikey, source, target);
       }, parseInt(document.querySelector('input[name="obs-text-delay"]').value, 10) || 1);
     };
+
     listener.onend = () => {
       console.log('onend')
       if (!listener.isRecognizing) {
