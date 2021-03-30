@@ -1,6 +1,7 @@
 var listener = new RTAWListener();
 var obssocket = new RTAWOBSWebSocket();
 var translate = new RTAWTranslate();
+var silentbreaker = new RTAWSilentBreaker();
 
 window.addEventListener('DOMContentLoaded', function() {
   console.log('loaded.');
@@ -19,6 +20,7 @@ window.addEventListener('DOMContentLoaded', function() {
     }
     createVoiceList('select[name="voice-target-native"]');
     createVoiceList('select[name="voice-target-foreign"]');
+    createVoiceList('select[name="voice-target-silent"]');
 
     // 設定情報の保存と復元がイベントより早いと困るので
     document.querySelectorAll('input, select').forEach((element) => {
@@ -91,45 +93,50 @@ window.addEventListener('DOMContentLoaded', function() {
       return;
     }
 
+    if (document.querySelector('input[name="silent-breaker-use-it"]').checked) {
+      silentbreaker.onbreak = () => {
+        const breakText = document.querySelector('input[name="silent-breaker-text"]').value;
+        const timeout =
+          parseInt(document.querySelector(`input[name="silent-breaker-timer"]`).value || 10000, 10) - 5000;
+        if (!breakText.startsWith('http')) {
+          DelayStreaming('silent', breakText, timeout, true, false);
+          return;
+        }
+        silentbreaker.textFromURL(breakText, (text) => {
+          DelayStreaming('silent', text, timeout, true, false);
+        });
+      }
+      silentbreaker.start(parseInt(document.querySelector('input[name="silent-breaker-timer"]').value, 10));
+    }
+
     const lang = document.querySelector('input[name="speech-recognition-lang"]').value || 'ja-JP';
 
     listener.ontrying = (text) => {
       console.log(text)
+
+      silentbreaker.reset();
+
       let diagnostic = document.querySelector('div[name="NativeLang"]');
       diagnostic.classList.remove('final');
       diagnostic.textContent = text;
       if (document.querySelector('input[name="obs-use-interim"]').checked) {
-        setTimeout(() => {
-          obssocket.toOBS(text,
-            document.querySelector('input[name="obs-text-native-source"]').value || 'native',
-            parseInt(document.querySelector(`input[name="obs-text-timeout"]`).value, 10),
-            true);
-        }, parseInt(document.querySelector('input[name="obs-text-delay"]').value, 10) || 1);
+        DelayStreaming('native', text, NaN, false, false);
       }
     };
 
     listener.ondone = (text) => {
       console.log(text)
+
+      silentbreaker.reset();
+
       let diagnostic = document.querySelector('div[name="NativeLang"]');
       diagnostic.classList.add('final');
       diagnostic.textContent = text;
       console.log('[FINAL] ' + text)
 
       // 配信の遅延に合わせて遅らせる
-      setTimeout(() => {
-        // OBSに送信するけど別に待たなくていい
-        obssocket.toOBS(text,
-          document.querySelector('input[name="obs-text-native-source"]').value || 'native',
-          parseInt(document.querySelector(`input[name="obs-text-timeout"]`).value, 10),
-          false);
-        // 読み上げる
-        AlpataSpeaks(text, 'voice-target-native');
-        // 翻訳情報取得
-        const apikey = document.querySelector('input[name="gas-deploy-key"]').value || 'AKfycbx76Gd_ytJJxInNVqVMUhEXpzEL1zsZpb_vRw-Z7S3ZR6n-5dM'
-        const source = document.querySelector('input[name="gas-source"]').value || 'ja'
-        const target = document.querySelector('input[name="gas-target"]').value || 'en'
-        translate.exec(text, apikey, source, target);
-      }, parseInt(document.querySelector('input[name="obs-text-delay"]').value, 10) || 1);
+      const timeout = parseInt(document.querySelector(`input[name="obs-text-timeout"]`).value, 10);
+      DelayStreaming('native', text, timeout, true, true);
     };
 
     listener.onend = () => {
@@ -152,6 +159,9 @@ window.addEventListener('DOMContentLoaded', function() {
   }
   document.querySelector('div[name="speech-speaker-foreign-submit"]').onclick = function() {
     AlpataSpeaks("I am an alpaca. there is no name yet.", 'voice-target-foreign');
+  }
+  document.querySelector('div[name="speech-speaker-silent-submit"]').onclick = function() {
+    AlpataSpeaks("吾輩はアルパカである。名前はまだない。", 'voice-target-silent');
   }
 
   // 翻訳処理のイベントハンドラー
@@ -188,4 +198,25 @@ function AlpataSpeaks(text, targetName) {
   utter.voice = voice;
   utter.lang = voice.lang;
   speechSynthesis.speak(utter);
+}
+
+function DelayStreaming(sourceName, text, timeout, isSpeak, isTranslate) {
+  setTimeout(() => {
+    // OBSに送信するけど別に待たなくていい
+    obssocket.toOBS(text,
+      document.querySelector(`input[name="obs-text-${sourceName}-source"]`).value || sourceName,
+      timeout,
+      false);
+    if (isSpeak) {
+      // 読み上げる
+      AlpataSpeaks(text, `voice-target-${sourceName}`);
+    }
+    if (isTranslate) {
+      // 翻訳情報取得
+      const apikey = document.querySelector('input[name="gas-deploy-key"]').value || 'AKfycbx76Gd_ytJJxInNVqVMUhEXpzEL1zsZpb_vRw-Z7S3ZR6n-5dM'
+      const source = document.querySelector('input[name="gas-source"]').value || 'ja'
+      const target = document.querySelector('input[name="gas-target"]').value || 'en'
+      translate.exec(text, apikey, source, target);
+    }
+  }, parseInt(document.querySelector('input[name="obs-text-delay"]').value, 10) || 1);
 }

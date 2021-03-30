@@ -12,6 +12,7 @@
     <script src="listen.js"></script>
     <script src="obs.js"></script>
     <script src="translate.js"></script>
+    <script src="silentbreaker.js"></script>
     <script src="index.js"></script>
   </head>
 
@@ -104,6 +105,9 @@
         <div class="item"><span>Foreign source</span>
           <input type="text" name="obs-text-foreign-source"/>
         </div>
+        <div class="item"><span>Silent breaker source</span>
+          <input type="text" name="obs-text-silent-source"/>
+        </div>
         <div class="item"><span>Timeout</span>
           <input type="text" name="obs-text-timeout"/>
         </div>
@@ -118,6 +122,36 @@
       </div>
     </div>
 
+    <div>
+      <div name="silent-breaker">
+        <h3>Silent breaker settings</h3>
+        <div class="item">
+          <label>
+            <input type="checkbox" name="silent-breaker-use-it"/><span>Use silent breaker</span>
+          </label>
+        </div>
+        <div class="item"><span>Timer</span>
+          <input type="text" name="silent-breaker-timer"/>
+        </div>
+        <div class="item"><span>Text/URL</span>
+          <input type="text" name="silent-breaker-text"/>
+        </div>
+        <div><span>Voice</span>
+          <select name="voice-target-silent"></select>
+        </div>
+        <div><span>Volume</span>
+          <input type="range" name="voice-target-silent-volume" min="0" max="1" step="0.1" value="1.0">
+        </div>
+        <div style="margin-left: 23px;"><span>Pitch</span>
+          <input type="range" name="voice-target-silent-pitch" min="0.1" max="10" step="0.1" value="1.0">
+        </div>
+        <div style="margin-left: 24px;"><span>Rate</span>
+          <input type="range" name="voice-target-silent-rate" min="0" max="2" step="0.1" value="1.0">
+        </div>
+        <div class="button" name="speech-speaker-silent-submit">Test</div>
+      </div>
+    </div>
+
     <div name="explaination" style="margin-top: 100px;">
       <h2>これは何？</h2>
       <p>音声認識からリアルタイムで翻訳し、認識結果と翻訳結果を音声合成で読み上げます。</p>
@@ -126,7 +160,7 @@
     </div>
 
     <div class="fotter flex-container">
-      <div>v1.1.4</div>
+      <div>v1.2.0</div>
       <div><a target="_blank" href="https://github.com/weizlogy/alpacartaw">Github</div>
       <div><a target="_blank" href="https://twitter.com/twilightalpaca">Twitter</div>
     </div>
