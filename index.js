@@ -90,6 +90,7 @@ window.addEventListener('DOMContentLoaded', function() {
     listener.isRecognizing = !listener.isRecognizing;
 
     if (!listener.isRecognizing) {
+      silentbreaker.stop();
       return;
     }
 

@@ -25,7 +25,9 @@ class RTAWSilentBreaker {
 
   stop = () => {
     const self = this;
-    clearTimeout(self.#timerId);
+    if (self.#timerId) {
+      clearTimeout(self.#timerId);
+    }
   };
 
   reset = () => {
