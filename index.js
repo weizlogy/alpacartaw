@@ -100,11 +100,11 @@ window.addEventListener('DOMContentLoaded', function() {
         const timeout =
           parseInt(document.querySelector(`input[name="silent-breaker-timer"]`).value || 10000, 10) - 5000;
         if (!breakText.startsWith('http')) {
-          DelayStreaming('silent', breakText, timeout, true, false);
+          DelayStreaming('silent', breakText, timeout, true, false, false);
           return;
         }
         silentbreaker.textFromURL(breakText, (text) => {
-          DelayStreaming('silent', text, timeout, true, false);
+          DelayStreaming('silent', text, timeout, true, false, false);
         });
       }
       silentbreaker.start(parseInt(document.querySelector('input[name="silent-breaker-timer"]').value, 10));
@@ -121,7 +121,7 @@ window.addEventListener('DOMContentLoaded', function() {
       diagnostic.classList.remove('final');
       diagnostic.textContent = text;
       if (document.querySelector('input[name="obs-use-interim"]').checked) {
-        DelayStreaming('native', text, NaN, false, false);
+        DelayStreaming('native', text, NaN, false, false, true);
       }
     };
 
@@ -137,7 +137,7 @@ window.addEventListener('DOMContentLoaded', function() {
 
       // 配信の遅延に合わせて遅らせる
       const timeout = parseInt(document.querySelector(`input[name="obs-text-timeout"]`).value, 10);
-      DelayStreaming('native', text, timeout, true, true);
+      DelayStreaming('native', text, timeout, true, true, false);
     };
 
     listener.onend = () => {
@@ -201,13 +201,13 @@ function AlpataSpeaks(text, targetName) {
   speechSynthesis.speak(utter);
 }
 
-function DelayStreaming(sourceName, text, timeout, isSpeak, isTranslate) {
+function DelayStreaming(sourceName, text, timeout, isSpeak, isTranslate, isInterim) {
   setTimeout(() => {
     // OBSに送信するけど別に待たなくていい
     obssocket.toOBS(text,
       document.querySelector(`input[name="obs-text-${sourceName}-source"]`).value || sourceName,
       timeout,
-      false);
+      isInterim);
     if (isSpeak) {
       // 読み上げる
       AlpataSpeaks(text, `voice-target-${sourceName}`);
