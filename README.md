@@ -31,6 +31,12 @@ ALPACARTAWから繋ぐには、IPAddrにxxxxxx.localhost.run、Portに443を指�
 
 # SpeechRecognition
 
+## Recognize continuity
+
+音声認識が行われるたびに、継続的に結果を返すのか、あるいは1つの結果のみ返すのかを制御する。（ON：する / OFF：しない）
+
+デフォルト：する
+
 ## Recognize lang
 
 音声認識する言語を設定する。

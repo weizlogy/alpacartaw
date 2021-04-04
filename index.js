@@ -110,7 +110,10 @@ window.addEventListener('DOMContentLoaded', function() {
       silentbreaker.start(parseInt(document.querySelector('input[name="silent-breaker-timer"]').value, 10));
     }
 
-    const lang = document.querySelector('input[name="speech-recognition-lang"]').value || 'ja-JP';
+    const lang =
+      document.querySelector('input[name="speech-recognition-lang"]').value || 'ja-JP';
+    const continuity =
+      document.querySelector('input[name="speech-recognition-continuity"]').checked;
 
     listener.ontrying = (text) => {
       console.log(text)
@@ -145,9 +148,10 @@ window.addEventListener('DOMContentLoaded', function() {
       if (!listener.isRecognizing) {
         return;
       }
-      setTimeout(() => { listener.start(lang); }, 100);
+      setTimeout(() => { listener.start(lang, continuity); }, 400);
     };
-    listener.start(lang);
+
+    listener.start(lang, continuity);
 
     status.textContent = 'Starting'
     status.classList.add('status-ok');

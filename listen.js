@@ -11,18 +11,19 @@ class RTAWListener {
 
   #recognition = new SpeechRecognition();
 
-  constructor() {
+  constructor() { this.#initialize() };
+
+  #initialize = () => {
     const self = this;
     // 音声認識初期化
-    this.#recognition = new SpeechRecognition();
+    self.#recognition = new SpeechRecognition();
 
     // UAがWindowsなら機能を有効にする
     // androidだとまだだめっぽいので...
     const isuawin = window.navigator.userAgent.toLowerCase().indexOf('windows') > -1;
-    this.#recognition.continuous = isuawin;
-    this.#recognition.interimResults = isuawin;
+    self.#recognition.interimResults = isuawin;
 
-    this.#recognition.onresult = function(event) {
+    self.#recognition.onresult = function(event) {
       const results = event.results;
       for (let i = event.resultIndex; i < results.length; i++) {
         const text = results[i][0].transcript;
@@ -35,14 +36,17 @@ class RTAWListener {
       }
     }
 
-    this.#recognition.onend = function(event) {
+    self.#recognition.onend = function(event) {
       self.onend();
     }
   };
 
-  start = async (lang) => {
-    this.#recognition.lang = lang;
-    this.#recognition.start();
+  start = async (lang, continuity) => {
+    const self = this;
+
+    self.#recognition.lang = lang;
+    self.#recognition.continuous = continuity;
+    self.#recognition.start();
   };
 
   end = () => {
