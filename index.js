@@ -206,22 +206,20 @@ function AlpataSpeaks(text, targetName) {
 }
 
 function DelayStreaming(sourceName, text, timeout, isSpeak, isTranslate, isInterim) {
-  setTimeout(() => {
-    // OBSに送信するけど別に待たなくていい
-    obssocket.toOBS(text,
-      document.querySelector(`input[name="obs-text-${sourceName}-source"]`).value || sourceName,
-      timeout,
-      isInterim);
-    if (isSpeak) {
-      // 読み上げる
-      AlpataSpeaks(text, `voice-target-${sourceName}`);
-    }
-    if (isTranslate) {
-      // 翻訳情報取得
-      const apikey = document.querySelector('input[name="gas-deploy-key"]').value || 'AKfycbx76Gd_ytJJxInNVqVMUhEXpzEL1zsZpb_vRw-Z7S3ZR6n-5dM'
-      const source = document.querySelector('input[name="gas-source"]').value || 'ja'
-      const target = document.querySelector('input[name="gas-target"]').value || 'en'
-      translate.exec(text, apikey, source, target);
-    }
-  }, parseInt(document.querySelector('input[name="obs-text-delay"]').value, 10) || 1);
+  // OBSに送信するけど別に待たなくていい
+  obssocket.toOBS(text,
+    document.querySelector(`input[name="obs-text-${sourceName}-source"]`).value || sourceName,
+    timeout,
+    isInterim);
+  if (isSpeak) {
+    // 読み上げる
+    AlpataSpeaks(text, `voice-target-${sourceName}`);
+  }
+  if (isTranslate) {
+    // 翻訳情報取得
+    const apikey = document.querySelector('input[name="gas-deploy-key"]').value || 'AKfycbx76Gd_ytJJxInNVqVMUhEXpzEL1zsZpb_vRw-Z7S3ZR6n-5dM'
+    const source = document.querySelector('input[name="gas-source"]').value || 'ja'
+    const target = document.querySelector('input[name="gas-target"]').value || 'en'
+    translate.exec(text, apikey, source, target);
+  }
 }
