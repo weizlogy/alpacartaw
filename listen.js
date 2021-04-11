@@ -36,6 +36,10 @@ class RTAWListener {
       }
     }
 
+    self.#recognition.onerror = function(event) {
+      console.log(event);
+    }
+
     self.#recognition.onend = function(event) {
       self.onend();
     }
