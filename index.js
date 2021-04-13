@@ -3,11 +3,18 @@ var obssocket = new RTAWOBSWebSocket();
 var translate = new RTAWTranslate();
 var silentbreaker = new RTAWSilentBreaker();
 
+var isVoiceListLoaded = false;
+
 window.addEventListener('DOMContentLoaded', function() {
   console.log('loaded.');
   // 音声合成のVOICE一覧生成
   speechSynthesis.onvoiceschanged = () => {
     console.log('onvoiceschanged.');
+
+    if (isVoiceListLoaded) {
+      return;
+    }
+
     const createVoiceList = function(target) {
       const selectbox = document.querySelector(target)
       const voices = speechSynthesis.getVoices();
@@ -21,6 +28,8 @@ window.addEventListener('DOMContentLoaded', function() {
     createVoiceList('select[name="voice-target-native"]');
     createVoiceList('select[name="voice-target-foreign"]');
     createVoiceList('select[name="voice-target-silent"]');
+
+    isVoiceListLoaded = true;
 
     // 設定情報の保存と復元がイベントより早いと困るので
     document.querySelectorAll('input, select').forEach((element) => {
@@ -192,8 +201,13 @@ window.addEventListener('DOMContentLoaded', function() {
  * 音声合成処理.
  * @param {string} text speakする文字列
  * @param {string} targetName voice-target-native / voice-target-foreign (母国語か外国語か)
+ * @param {boolean} isPrioritize 優先するか？(true: する / false: しない)
  */
-function AlpataSpeaks(text, targetName) {
+function AlpataSpeaks(text, targetName, isPrioritize) {
+  if (isPrioritize) {
+    // 優先するものが来たらキューを消す
+    speechSynthesis.cancel();
+  }
   const selectbox = document.querySelector(`select[name="${targetName}"]`)
   const voice = speechSynthesis.getVoices()[selectbox.selectedIndex];
   const utter = new SpeechSynthesisUtterance(text);
@@ -209,11 +223,10 @@ function DelayStreaming(sourceName, text, timeout, isSpeak, isTranslate, isInter
   // OBSに送信するけど別に待たなくていい
   obssocket.toOBS(text,
     document.querySelector(`input[name="obs-text-${sourceName}-source"]`).value || sourceName,
-    timeout,
-    isInterim);
+    timeout, isInterim);
   if (isSpeak) {
     // 読み上げる
-    AlpataSpeaks(text, `voice-target-${sourceName}`);
+    AlpataSpeaks(text, `voice-target-${sourceName}`, sourceName == 'native');
   }
   if (isTranslate) {
     // 翻訳情報取得
