@@ -122,7 +122,7 @@ class RTAWOBSWebSocket {
       }
       this.#timeoutid = setTimeout(() => {
         console.log('timeout move')
-        self.toOBS('', sourceName, timeout);
+        self.toOBS('', sourceName, NaN);
         self.#timeoutid = -1;
       }, timeout);
 
