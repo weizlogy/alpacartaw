@@ -5,10 +5,10 @@ class RTAWOBSWebSocket {
   onconnected = (event) => { };
 
   #socket = null;
-  #timeoutid = -1;
+  #timeoutId = {};
   #password = '';
 
-  constructor() { }
+  constructor() {  }
 
   start = (ipaddr, port, password, protocol) => {
     const self = this;
@@ -77,7 +77,7 @@ class RTAWOBSWebSocket {
   toOBS = async (text, sourceName, timeout, interim) => {
     const self = this;
 
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
       if (this.#socket == null || this.#socket.readyState != 1) {
         resolve('websocket is not ready.');
         return;
@@ -100,6 +100,7 @@ class RTAWOBSWebSocket {
 
       // 
       if (text == '' || interim) {
+        console.log('stop here. ' + sourceName);
         resolve('');
         return;
       }
@@ -107,6 +108,7 @@ class RTAWOBSWebSocket {
       // 一定時間で字幕を消す対応
       if (isNaN(timeout)) {
         // 未設定なら消さない
+        console.log('tieout is NaN. ' + sourceName);
         resolve('');
         return;
       }
@@ -115,16 +117,19 @@ class RTAWOBSWebSocket {
         timeout = 5000;
       }
 
-      if (this.#timeoutid == -1) {
-        console.log('timeout clear')
-        // タイマー動作中ならキャンセルして再生成する
-        clearTimeout(this.#timeoutid);
-      }
-      this.#timeoutid = setTimeout(() => {
-        console.log('timeout move')
-        self.toOBS('', sourceName, NaN);
-        self.#timeoutid = -1;
-      }, timeout);
+      new Promise((rs, _) => {
+        if (self.#timeoutId[sourceName]) {
+          console.log('timeout clear. ' + sourceName);
+          clearTimeout(self.#timeoutId[sourceName]);
+        }
+        self.#timeoutId[sourceName] = setTimeout(() => {
+          console.log('timeout start. ' + sourceName);
+          rs(sourceName);
+        }, timeout);
+      }).then(name => {
+        console.log('timeout move. ' + name)
+        self.toOBS('', name, NaN);
+      })
 
       resolve('');
     });
