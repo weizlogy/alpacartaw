@@ -230,7 +230,13 @@ OBSのテキストソースに表示するテキストの最大長。
 
 - 確定状態の場合
 
-1000msごとに自動スクロールする。
+Subtitle scroll timeで指定した時間ごとに自動スクロールする。
+
+## Subtitle scroll time
+
+Subtitle limitが有効の場合、確定状態のスクロールする時間。（ミリ秒）
+
+デフォルト：300ms
 
 ## Use interimResults
 

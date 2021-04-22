@@ -125,6 +125,8 @@ window.addEventListener('DOMContentLoaded', function() {
       document.querySelector('input[name="speech-recognition-continuity"]').checked;
     const subtitleLimit =
       parseInt(document.querySelector(`input[name="obs-text-subtitle-limit"]`).value, 10);
+    const subtitleScrollTime =
+      parseInt(document.querySelector(`input[name="obs-text-subtitle-scroll-time"]`).value, 10);
 
     listener.ontrying = (value) => {
       console.log(value);
@@ -162,7 +164,10 @@ window.addEventListener('DOMContentLoaded', function() {
 
         // 文字数制限があるなら
         if (!isNaN(subtitleLimit)) {
-          let remainTimeout = 1000;
+          let remainTimeout = 300;
+          if (!isNaN(subtitleScrollTime)) {
+            remainTimeout = subtitleScrollTime;
+          }
           let count = text.length - subtitleLimit
           for (let i = 0; i < count; i++) {
             // 次の音声認識の未確定分の取得が始まったら、止める
