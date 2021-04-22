@@ -8,9 +8,9 @@ class RTAWListener {
   onend = () => { };
 
   isRecognizing = false;
+  status = '';
 
   #recognition = new SpeechRecognition();
-  #subtitleLimit = NaN;
 
   constructor() { this.#initialize() };
 
@@ -31,36 +31,38 @@ class RTAWListener {
         let text = results[i][0].transcript;
         if (!results[i].isFinal) {
           // ここは未確定
-          if (!isNaN(self.#subtitleLimit)) {
-            text = text.substr(text.length - self.#subtitleLimit, self.#subtitleLimit);
-          }
+          self.status = 'trying';
           self.ontrying(text);
           continue;
         }
         // ここは確定。完了イベント呼び出し
+        self.status = 'done';
         self.ondone(text);
       }
     }
 
     self.#recognition.onerror = function(event) {
+      self.status = 'error';
       console.log(event);
     }
 
     self.#recognition.onend = function(event) {
+      self.status = 'end';
       self.onend();
     }
   };
 
-  start = async (lang, continuity, subtitleLimit) => {
+  start = async (lang, continuity) => {
     const self = this;
 
     self.#recognition.lang = lang;
     self.#recognition.continuous = continuity;
-    self.#subtitleLimit = subtitleLimit;
     self.#recognition.start();
+    self.status = 'start';
   };
 
   end = () => {
     this.#recognition.stop();
+    this.status = 'stop';
   };
 };

@@ -126,8 +126,10 @@ window.addEventListener('DOMContentLoaded', function() {
     const subtitleLimit =
       parseInt(document.querySelector(`input[name="obs-text-subtitle-limit"]`).value, 10);
 
-    listener.ontrying = (text) => {
-      console.log(text)
+    listener.ontrying = (value) => {
+      console.log(value);
+
+      let text = value;
 
       silentbreaker.reset();
 
@@ -135,23 +137,51 @@ window.addEventListener('DOMContentLoaded', function() {
       diagnostic.classList.remove('final');
       diagnostic.textContent = text;
       if (document.querySelector('input[name="obs-use-interim"]').checked) {
+        if (!isNaN(subtitleLimit)) {
+          text = text.substr(text.length - subtitleLimit, subtitleLimit);
+        }
         DelayStreaming('native', text, NaN, false, false, true);
       }
     };
 
-    listener.ondone = (text) => {
-      console.log(text)
+    listener.ondone = async (value) => {
+      console.log('[FINAL]', value);
+
+      let text = value;
 
       silentbreaker.reset();
 
       let diagnostic = document.querySelector('div[name="NativeLang"]');
       diagnostic.classList.add('final');
       diagnostic.textContent = text;
-      console.log('[FINAL] ' + text)
 
-      // 配信の遅延に合わせて遅らせる
-      const timeout = parseInt(document.querySelector(`input[name="obs-text-timeout"]`).value, 10);
-      DelayStreaming('native', text, timeout, true, true, false);
+      await new Promise(async (resolve, _) => {
+        // 自動消去タイムアウト時間を取得して渡す
+        const timeout = parseInt(document.querySelector(`input[name="obs-text-timeout"]`).value, 10);
+        DelayStreaming('native', text, timeout, true, true, false);
+
+        // 文字数制限があるなら
+        if (!isNaN(subtitleLimit)) {
+          let remainTimeout = 1000;
+          let count = text.length - subtitleLimit
+          for (let i = 0; i < count; i++) {
+            // 次の音声認識の未確定分の取得が始まったら、止める
+            if (listener.status == 'trying') {
+              break;
+            }
+            await new Promise((rs, _) => {
+              setTimeout(() => {
+                rs();
+              }, remainTimeout);
+            }).then(() => {
+              let tempText = text.substr(i + 1);
+              DelayStreaming('native', tempText, timeout, false, false, false);
+            });
+          }
+        }
+        resolve();
+      });
+
     };
 
     listener.onend = () => {
@@ -160,11 +190,11 @@ window.addEventListener('DOMContentLoaded', function() {
         return;
       }
       // 音声認識が終了したら再開させるところ
-      setTimeout(() => { listener.start(lang, continuity, subtitleLimit); }, 400);
+      setTimeout(() => { listener.start(lang, continuity); }, 400);
     };
 
     // ここで音声認識をスタートする
-    listener.start(lang, continuity, subtitleLimit);
+    listener.start(lang, continuity);
 
     status.textContent = 'Starting'
     status.classList.add('status-ok');
