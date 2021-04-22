@@ -10,6 +10,7 @@ class RTAWListener {
   isRecognizing = false;
 
   #recognition = new SpeechRecognition();
+  #subtitleLimit = NaN;
 
   constructor() { this.#initialize() };
 
@@ -24,14 +25,19 @@ class RTAWListener {
     self.#recognition.interimResults = isuawin;
 
     self.#recognition.onresult = function(event) {
+      // 音声認識結果取得してます
       const results = event.results;
       for (let i = event.resultIndex; i < results.length; i++) {
-        const text = results[i][0].transcript;
+        let text = results[i][0].transcript;
         if (!results[i].isFinal) {
+          // ここは未確定
+          if (!isNaN(self.#subtitleLimit)) {
+            text = text.substr(text.length - self.#subtitleLimit, self.#subtitleLimit);
+          }
           self.ontrying(text);
           continue;
         }
-        // 完了イベント呼び出し
+        // ここは確定。完了イベント呼び出し
         self.ondone(text);
       }
     }
@@ -45,11 +51,12 @@ class RTAWListener {
     }
   };
 
-  start = async (lang, continuity) => {
+  start = async (lang, continuity, subtitleLimit) => {
     const self = this;
 
     self.#recognition.lang = lang;
     self.#recognition.continuous = continuity;
+    self.#subtitleLimit = subtitleLimit;
     self.#recognition.start();
   };
 

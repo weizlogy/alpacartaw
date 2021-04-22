@@ -123,6 +123,8 @@ window.addEventListener('DOMContentLoaded', function() {
       document.querySelector('input[name="speech-recognition-lang"]').value || 'ja-JP';
     const continuity =
       document.querySelector('input[name="speech-recognition-continuity"]').checked;
+    const subtitleLimit =
+      parseInt(document.querySelector(`input[name="obs-text-subtitle-limit"]`).value, 10);
 
     listener.ontrying = (text) => {
       console.log(text)
@@ -157,10 +159,12 @@ window.addEventListener('DOMContentLoaded', function() {
       if (!listener.isRecognizing) {
         return;
       }
-      setTimeout(() => { listener.start(lang, continuity); }, 400);
+      // 音声認識が終了したら再開させるところ
+      setTimeout(() => { listener.start(lang, continuity, subtitleLimit); }, 400);
     };
 
-    listener.start(lang, continuity);
+    // ここで音声認識をスタートする
+    listener.start(lang, continuity, subtitleLimit);
 
     status.textContent = 'Starting'
     status.classList.add('status-ok');
