@@ -33,6 +33,9 @@ window.addEventListener('DOMContentLoaded', function() {
 
     // 設定情報の保存と復元がイベントより早いと困るので
     document.querySelectorAll('input, select').forEach((element) => {
+      if (element.type == 'file') {
+        return;
+      }
       let store = (element.type == 'password') ? sessionStorage : localStorage;
       const storageItem = store.getItem(element.name);
       if (storageItem) {
@@ -234,6 +237,18 @@ window.addEventListener('DOMContentLoaded', function() {
     const output = document.querySelector('div[name="ForeignLang"]');
     output.textContent = "[ERROR] " + error;
   };
+
+  // 辞書
+  const file = document.querySelector('input[name="speech-recognition-dictionary"]');
+  file.addEventListener('change', (e) => {
+    const reader = new FileReader();
+    reader.onload = function(event) {
+      listener.dictionary = JSON.parse(event.target.result);
+      console.log(listener.dictionary);
+    }
+    reader.readAsText(e.target.files[0]);
+  });
+
 });
 
 /**

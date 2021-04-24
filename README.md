@@ -43,6 +43,12 @@ ALPACARTAWから繋ぐには、IPAddrにxxxxxx.localhost.run、Portに443を指�
 
 デフォルト：ja_JP
 
+## Dictionary
+
+音声認識結果に適用する**JSON形式**の辞書を設定する。
+
+デフォルト：なし
+
 ## Start
 
 音声認識を開始する。

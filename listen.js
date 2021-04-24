@@ -9,6 +9,7 @@ class RTAWListener {
 
   isRecognizing = false;
   status = '';
+  dictionary = {};
 
   #recognition = new SpeechRecognition();
 
@@ -37,6 +38,12 @@ class RTAWListener {
         }
         // ここは確定。完了イベント呼び出し
         self.status = 'done';
+        // 辞書による変換
+        if (self.dictionary) {
+          Object.keys(self.dictionary).forEach(key => {
+            text = text.replace(key, self.dictionary[key]);
+          });
+        }
         self.ondone(text);
       }
     }
