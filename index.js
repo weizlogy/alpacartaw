@@ -143,7 +143,11 @@ window.addEventListener('DOMContentLoaded', function() {
       diagnostic.textContent = text;
       if (document.querySelector('input[name="obs-use-interim"]').checked) {
         if (!isNaN(subtitleLimit)) {
-          text = text.substr(text.length - subtitleLimit, subtitleLimit);
+          let startIndex = text.length - subtitleLimit;
+          if (startIndex < 0) {
+            startIndex = 0;
+          }
+          text = text.substr(startIndex);
         }
         DelayStreaming('native', text, NaN, false, false, true);
       }
