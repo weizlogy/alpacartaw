@@ -1,7 +1,7 @@
 var listener = new RTAWListener();
 var obssocket = new RTAWOBSWebSocket();
 var translate = new RTAWTranslate();
-var silentbreaker = new RTAWSilentBreaker();
+var livelog = new RTAWLiveLog();
 
 var isVoiceListLoaded = false;
 
@@ -27,7 +27,6 @@ window.addEventListener('DOMContentLoaded', function() {
     }
     createVoiceList('select[name="voice-target-native"]');
     createVoiceList('select[name="voice-target-foreign"]');
-    createVoiceList('select[name="voice-target-silent"]');
 
     isVoiceListLoaded = true;
 
@@ -102,24 +101,7 @@ window.addEventListener('DOMContentLoaded', function() {
     listener.isRecognizing = !listener.isRecognizing;
 
     if (!listener.isRecognizing) {
-      silentbreaker.stop();
       return;
-    }
-
-    if (document.querySelector('input[name="silent-breaker-use-it"]').checked) {
-      silentbreaker.onbreak = () => {
-        const breakText = document.querySelector('input[name="silent-breaker-text"]').value;
-        const timeout =
-          parseInt(document.querySelector(`input[name="silent-breaker-timer"]`).value || 10000, 10) - 5000;
-        if (!breakText.startsWith('http')) {
-          DelayStreaming('silent', breakText, timeout, true, false, false);
-          return;
-        }
-        silentbreaker.textFromURL(breakText, (text) => {
-          DelayStreaming('silent', text, timeout, true, false, false);
-        });
-      }
-      silentbreaker.start(parseInt(document.querySelector('input[name="silent-breaker-timer"]').value, 10));
     }
 
     const lang =
@@ -135,8 +117,6 @@ window.addEventListener('DOMContentLoaded', function() {
       console.log(value);
 
       let text = value;
-
-      silentbreaker.reset();
 
       let diagnostic = document.querySelector('div[name="NativeLang"]');
       diagnostic.classList.remove('final');
@@ -157,8 +137,6 @@ window.addEventListener('DOMContentLoaded', function() {
       console.log('[FINAL]', value);
 
       let text = value;
-
-      silentbreaker.reset();
 
       let diagnostic = document.querySelector('div[name="NativeLang"]');
       diagnostic.classList.add('final');
@@ -220,12 +198,9 @@ window.addEventListener('DOMContentLoaded', function() {
   document.querySelector('div[name="speech-speaker-foreign-submit"]').onclick = function() {
     AlpataSpeaks("I am an alpaca. there is no name yet.", 'voice-target-foreign');
   }
-  document.querySelector('div[name="speech-speaker-silent-submit"]').onclick = function() {
-    AlpataSpeaks("吾輩はアルパカである。名前はまだない。", 'voice-target-silent');
-  }
 
   // 翻訳処理のイベントハンドラー
-  translate.ondone = (translated) => {
+  translate.ondone = (text, translated) => {
     const output = document.querySelector('div[name="ForeignLang"]');
     output.classList.add('final');
     output.textContent = translated;
@@ -234,12 +209,26 @@ window.addEventListener('DOMContentLoaded', function() {
       document.querySelector('input[name="obs-text-foreign-source"]').value || 'foreign',
       parseInt(document.querySelector(`input[name="obs-text-timeout"]`).value, 10),
       false);
+    // LiveLog
+    if (document.querySelector('input[name="live-log-use-it"]').checked) {
+      const discordapikey = document.querySelector('input[name="live-log-apikey"]').value;
+      const discordurlparam1 = document.querySelector('input[name="live-log-param1"]').value;
+      const discordurlparam2 = document.querySelector('input[name="live-log-param2"]').value;
+      livelog.exec(text, translated, discordapikey, discordurlparam1, discordurlparam2);
+    }
     // 読み上げる
     AlpataSpeaks(translated, 'voice-target-foreign');
   };
-  translate.onerror = (error) => {
+  translate.onerror = (text, error) => {
     const output = document.querySelector('div[name="ForeignLang"]');
     output.textContent = "[ERROR] " + error;
+    // LiveLog
+    if (document.querySelector('input[name="live-log-use-it"]').checked) {
+      const discordapikey = document.querySelector('input[name="live-log-apikey"]').value;
+      const discordurlparam1 = document.querySelector('input[name="live-log-param1"]').value;
+      const discordurlparam2 = document.querySelector('input[name="live-log-param2"]').value;
+      livelog.exec(text, error, discordapikey, discordurlparam1, discordurlparam2);
+    }
   };
 
   // 辞書

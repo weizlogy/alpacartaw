@@ -12,7 +12,7 @@
     <script src="listen.js"></script>
     <script src="obs.js"></script>
     <script src="translate.js"></script>
-    <script src="silentbreaker.js"></script>
+    <script src="livelog.js"></script>
     <script src="index.js"></script>
   </head>
 
@@ -134,32 +134,22 @@
     </div>
 
     <div>
-      <div name="silent-breaker">
-        <h3>Silent breaker settings</h3>
+      <div name="livelog">
+        <h3>LiveLog settings</h3>
         <div class="item">
           <label>
-            <input type="checkbox" name="silent-breaker-use-it"/><span>Use silent breaker</span>
+            <input type="checkbox" name="live-log-use-it"/><span>Use live log</span>
           </label>
         </div>
-        <div class="item"><span>Timer</span>
-          <input type="text" name="silent-breaker-timer"/>
+        <div class="item"><span>API key</span>
+          <input type="text" name="live-log-apikey"/>
         </div>
-        <div class="item"><span>Text/URL</span>
-          <input type="text" name="silent-breaker-text"/>
+        <div class="item"><span>Param1</span>
+          <input type="text" name="live-log-param1"/>
         </div>
-        <div><span>Voice</span>
-          <select name="voice-target-silent"></select>
+        <div class="item"><span>Param2</span>
+          <input type="text" name="live-log-param2"/>
         </div>
-        <div><span>Volume</span>
-          <input type="range" name="voice-target-silent-volume" min="0" max="1" step="0.1" value="1.0">
-        </div>
-        <div style="margin-left: 23px;"><span>Pitch</span>
-          <input type="range" name="voice-target-silent-pitch" min="0.1" max="10" step="0.1" value="1.0">
-        </div>
-        <div style="margin-left: 24px;"><span>Rate</span>
-          <input type="range" name="voice-target-silent-rate" min="0" max="2" step="0.1" value="1.0">
-        </div>
-        <div class="button" name="speech-speaker-silent-submit">Test</div>
       </div>
     </div>
 

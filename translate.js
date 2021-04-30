@@ -1,6 +1,6 @@
 class RTAWTranslate {
 
-  ondone = (translated) => {};
+  ondone = (text, translated) => {};
   onerror = (error) => {};
 
   constructor() { };
@@ -20,7 +20,7 @@ class RTAWTranslate {
       jsonpCallback: "test",
       timeout: 10000
     }).done(function(data) {
-      self.ondone(data["translated"]);
+      self.ondone(text, data["translated"]);
     })
     .fail(function(data) {
       self.onerror(data);
