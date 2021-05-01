@@ -265,56 +265,56 @@ Windowsのみ
 
 # Silent breaker settings
 
-SilentBreaker機能は、無言状態を検知すると起動し、任意の文字列をOBSに送出、読み上げる。
+~~SilentBreaker機能は、無言状態を検知すると起動し、任意の文字列をOBSに送出、読み上げる。~~
 
-## Use silent breaker
+本機能の提供は終了した。
 
-該当機能を使用するか？（ON：する / OFF：しない）
+# LiveLog settings
+
+Discordに字幕と同じ文章をロギングする機能。
+
+この機能はGoogleScriptApp経由でDiscordのWEBHOOKを呼び出すようにしている。
+
+# Use live log
+
+LiveLog機能を有効にする。（ON：する / OFF：しない）
 
 デフォルト：OFF
 
-## Timer
+## API key
 
-無言状態と判断するまでの時間（ミリ秒）
-
-デフォルト：なし
-
-## Text/URL
-
-該当機能で使用する任意の文字列。
-
-httpから始まる場合はURLと判断し、該当URLからの応答結果（テキスト）を使用する。
-（XMLやJSONなどのフォーマット解析には対応していない）
+DiscordのWEBHOOKを呼び出す実装をしたGASのAPIキー。
 
 デフォルト：なし
 
-## Voice
+実装サンプルは下記参照。
 
-該当機能の言語の音声を設定する。
+```javascript
+function doGet(e) {
+  var p = e.parameter;
 
-デフォルト：取得可能な音声一覧の先頭
+  const WEBHOOK_URL = "https://discord.com/api/webhooks/" + p.param1 + "/" + p.param2; //取得したWebhookURLを追加
 
-## Volume
+  const payload = {
+    username: p.name,
+    content: p.text + "(" + p.translated + ")",
+  };
 
-該当機能の言語の音声の音量を設定する。
+  UrlFetchApp.fetch(WEBHOOK_URL, {
+    method: "post",
+    contentType: "application/json",
+    payload: JSON.stringify(payload),
+  });
+}
+```
 
-デフォルト：1
+## Param1 & Param2
 
-## Pitch
+DiscordのWEBHOOKのURLの一部を設定する。
 
-該当機能の言語の音声の音程を設定する。
+https://discord.com/api/webhooks/**Param1**/**Param2**
 
-デフォルト：1
-
-## Rate
-
-該当機能の言語の音声の速度を設定する。
-
-デフォルト：1
-
-## Test
-
-該当機能の言語で音声合成をテスト実行する。
+デフォルト：なし
 
 # 特記
 
