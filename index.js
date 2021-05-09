@@ -3,17 +3,11 @@ var obssocket = new RTAWOBSWebSocket();
 var translate = new RTAWTranslate();
 var livelog = new RTAWLiveLog();
 
-var isVoiceListLoaded = false;
-
 window.addEventListener('DOMContentLoaded', function() {
   console.log('loaded.');
   // 音声合成のVOICE一覧生成
   speechSynthesis.onvoiceschanged = () => {
     console.log('onvoiceschanged.');
-
-    if (isVoiceListLoaded) {
-      return;
-    }
 
     const createVoiceList = function(target) {
       const selectbox = document.querySelector(target)
@@ -27,8 +21,6 @@ window.addEventListener('DOMContentLoaded', function() {
     }
     createVoiceList('select[name="voice-target-native"]');
     createVoiceList('select[name="voice-target-foreign"]');
-
-    isVoiceListLoaded = true;
 
     // 設定情報の保存と復元がイベントより早いと困るので
     document.querySelectorAll('input, select').forEach((element) => {
