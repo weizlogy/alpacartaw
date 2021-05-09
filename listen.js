@@ -44,6 +44,7 @@ class RTAWListener {
             text = text.replace(key, self.dictionary[key]);
           });
         }
+        self.#recognition.stop();
         self.ondone(text);
       }
     }
@@ -69,7 +70,6 @@ class RTAWListener {
   };
 
   end = () => {
-    this.#recognition.stop();
     this.status = 'stop';
   };
 };

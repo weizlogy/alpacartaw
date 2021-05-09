@@ -172,7 +172,7 @@ window.addEventListener('DOMContentLoaded', function() {
         return;
       }
       // 音声認識が終了したら再開させるところ
-      setTimeout(() => { listener.start(lang, continuity); }, 400);
+      setTimeout(() => { listener.start(lang, continuity); }, 1);
     };
 
     // ここで音声認識をスタートする
