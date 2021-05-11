@@ -243,6 +243,9 @@ window.addEventListener('DOMContentLoaded', function() {
  * @param {boolean} isPrioritize 優先するか？(true: する / false: しない)
  */
 function AlpataSpeaks(text, targetName, isPrioritize) {
+  if (!document.querySelector('input[name="voice-use-it"]').checked) {
+    return;
+  }
   if (isPrioritize) {
     // 優先するものが来たらキューを消す
     speechSynthesis.cancel();
