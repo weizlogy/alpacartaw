@@ -53,6 +53,30 @@ ALPACARTAWから繋ぐには、IPAddrにxxxxxx.localhost.run、Portに443を指�
 
 音声認識を開始する。
 
+# Speaker adaptation (v1.3 -)
+
+音声認識結果に適用する辞書をトレーニングにより生成する。
+
+## Adapt target
+
+トレーニングしたい文字列を設定する。
+
+デフォルト：なし
+
+## Training
+
+トレーニングを開始する。
+
+- 実行にはAdapt targetの設定が必須
+
+- 音声認識はNative outputに出力される
+
+トレーニングが正しく行われた場合、即座に現時点の読み込み済みの辞書を更新する。（ファイルには保存しない
+
+## FileSave
+
+辞書をローカル保存する。
+
 # Speech translate settings
 
 ## GAS deploy key

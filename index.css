@@ -64,8 +64,10 @@ input[type="range"] {
 
 .status-ok {
   color: darkgreen;
+  border: 2px solid darkgreen;
 }
 
 .status-ng {
   color: red;
+  border: 2px solid red;
 }

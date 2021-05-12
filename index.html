@@ -14,6 +14,7 @@
     <script defer src="obs.js"></script>
     <script defer src="translate.js"></script>
     <script defer src="livelog.js"></script>
+    <script defer src="speakeradaptation.js"></script>
     <script defer src="index.js"></script>
   </head>
 
@@ -41,18 +42,17 @@
         <div class="button" name="speech-recognition-submit" style="display: inline-block;">Start</div>
       </div>
 
-      <div name="speech-translate">
-        <h3>Speech translate settings</h3>
-        <div class="item"><span>GAS deploy key</span>
-          <input type="text" name="gas-deploy-key"/>
+      <div name="speaker-adaptation">
+        <h3>Speaker adaptation</h3>
+        <div class="item"><span>Adapt target</span>
+          <input type="text" name="speaker-adaptation-target"/>
         </div>
-        <div class="item"><span>Native lang</span>
-          <input type="text" name="gas-source"/>
+        <div>
+          <div class="button" name="speaker-adaptation-submit">Training</div>
         </div>
-        <div class="item"><span>Foreign lang</span>
-          <input type="text" name="gas-target"/>
+        <div>
+          <div class="button" name="speaker-adaptation-permanent-save-submit">FileSave</div>
         </div>
-        <div class="button" name="speech-translate-submit">Test</div>
       </div>
 
       <div name="obs-connection">
@@ -69,6 +69,22 @@
         <div>
           <div class="button" name="obs-submit">Connect</div>
         </div>
+      </div>
+    </div>
+
+    <div class="flex-container" name="speech-action">
+      <div name="speech-translate">
+        <h3>Speech translate settings</h3>
+        <div class="item"><span>GAS deploy key</span>
+          <input type="text" name="gas-deploy-key"/>
+        </div>
+        <div class="item"><span>Native lang</span>
+          <input type="text" name="gas-source"/>
+        </div>
+        <div class="item"><span>Foreign lang</span>
+          <input type="text" name="gas-target"/>
+        </div>
+        <div class="button" name="speech-translate-submit">Test</div>
       </div>
     </div>
 
@@ -167,7 +183,7 @@
     </div>
 
     <div class="fotter flex-container">
-      <div>v1.2.7</div>
+      <div>v1.3.1</div>
       <div><a target="_blank" rel="noreferrer" title="Github" href="https://github.com/weizlogy/alpacartaw">Github</div>
       <div><a target="_blank" rel="noreferrer" title="Twitter" href="https://twitter.com/twilightalpaca">Twitter</div>
     </div>

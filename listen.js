@@ -9,8 +9,8 @@ class RTAWListener {
 
   isRecognizing = false;
   status = '';
-  dictionary = {};
 
+  #dictionary = {};
   #recognition = new SpeechRecognition();
 
   constructor() { this.#initialize() };
@@ -39,9 +39,9 @@ class RTAWListener {
         // ここは確定。完了イベント呼び出し
         self.status = 'done';
         // 辞書による変換
-        if (self.dictionary) {
-          Object.keys(self.dictionary).forEach(key => {
-            text = text.replace(key, self.dictionary[key]);
+        if (self.#dictionary) {
+          Object.keys(self.#dictionary).forEach(key => {
+            text = text.replace(key, self.#dictionary[key]);
           });
         }
         self.#recognition.stop();
@@ -71,5 +71,41 @@ class RTAWListener {
 
   end = () => {
     this.status = 'stop';
+  };
+
+  getDictionary = () => {
+    const self = this;
+    return self.#dictionary;
+  };
+
+  setDictionary = (dic) => {
+    const self = this;
+    self.#dictionary = dic;
+    console.log('listener.setDictionary', self.#dictionary);
+  };
+
+  addDictionary = (key, value) => {
+    const self = this;
+    self.#dictionary[key] = value;
+    console.log(`listener.addDictionary = ${key} => ${value}`);
+  };
+
+  // TODO: 削除は？
+
+  tempSaveDictionary = (newdic) => {
+    const self = this;
+    self.#dictionary = Object.assign(self.#dictionary, newdic);
+  };
+
+  permanentSaveDictionary = async () => {
+    const self = this;
+    const contents = JSON.stringify(self.#dictionary);
+    const handle = await window.showSaveFilePicker({});
+
+    const writable = await handle.createWritable();
+    await writable.write(contents);
+    await writable.close();
+
+    console.log('permanentSaveDictionary finished.');
   };
 };

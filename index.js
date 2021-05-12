@@ -2,6 +2,7 @@ var listener = new RTAWListener();
 var obssocket = new RTAWOBSWebSocket();
 var translate = new RTAWTranslate();
 var livelog = new RTAWLiveLog();
+var adaptation = new RTAWSpeakerAdaptation();
 
 window.addEventListener('DOMContentLoaded', function() {
   console.log('loaded.');
@@ -228,11 +229,60 @@ window.addEventListener('DOMContentLoaded', function() {
   file.addEventListener('change', (e) => {
     const reader = new FileReader();
     reader.onload = function(event) {
-      listener.dictionary = JSON.parse(event.target.result);
-      console.log(listener.dictionary);
+      listener.setDictionary(JSON.parse(event.target.result));
     }
     reader.readAsText(e.target.files[0]);
   });
+
+
+  //** 話者適用 */
+  document.querySelector('div[name="speaker-adaptation-submit"]').onclick = function() {
+    if (listener.isRecognizing) {
+      alert('Do not use while SpeechRecognizing.');
+      return;
+    }
+
+    const lang =
+      document.querySelector('input[name="speech-recognition-lang"]').value || 'ja-JP';
+    const continuity = false;  // 辞書登録用なので継続性は不要
+    const target = document.querySelector('input[name="speaker-adaptation-target"]');
+
+    target.classList.remove('status-ng');
+    if (!target.value) {
+      target.classList.add('status-ng');
+      return;
+    }
+
+    adaptation.ontrying = (text) => {
+      console.log('adaptation-trying', text);
+
+      const diagnostic = document.querySelector('div[name="NativeLang"]');
+      diagnostic.classList.remove('final');
+      diagnostic.textContent = text;
+    };
+    adaptation.ondone = (text) => {
+      console.log('adaptation-done', text);
+
+      const diagnostic = document.querySelector('div[name="NativeLang"]');
+      diagnostic.classList.add('final');
+      diagnostic.textContent = text;
+
+      // 辞書登録判定
+      // メモリに登録しておく
+      if (target.value != text) {
+        adaptation.addDictionary(text, target.value);
+        adaptation.tempSaveDictionary(listener);
+      }
+    };
+    adaptation.onend = () => {
+      console.log('adaptation-end');
+    };
+    adaptation.start(lang, continuity);
+  };
+
+  document.querySelector('div[name="speaker-adaptation-permanent-save-submit"]').onclick = async function(e) {
+    await listener.permanentSaveDictionary();
+  };
 
 });
 
