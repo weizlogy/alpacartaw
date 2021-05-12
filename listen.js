@@ -28,25 +28,28 @@ class RTAWListener {
     self.#recognition.onresult = function(event) {
       // 音声認識結果取得してます
       const results = event.results;
+      let tryingTempText = '';
       for (let i = event.resultIndex; i < results.length; i++) {
         let text = results[i][0].transcript;
-        if (!results[i].isFinal) {
-          // ここは未確定
-          self.status = 'trying';
-          self.ontrying(text);
-          continue;
+        if (results[i].isFinal) {
+          // ここは確定。完了イベント呼び出し
+          self.status = 'done';
+          // 辞書による変換
+          if (self.#dictionary) {
+            Object.keys(self.#dictionary).forEach(key => {
+              text = text.replace(key, self.#dictionary[key]);
+            });
+          }
+          self.#recognition.stop();
+          self.ondone(text);
+          return;
         }
-        // ここは確定。完了イベント呼び出し
-        self.status = 'done';
-        // 辞書による変換
-        if (self.#dictionary) {
-          Object.keys(self.#dictionary).forEach(key => {
-            text = text.replace(key, self.#dictionary[key]);
-          });
-        }
-        self.#recognition.stop();
-        self.ondone(text);
+        // 確定していない場合は要素の分だけ文字列を連結していく
+        tryingTempText += text;
       }
+      // ここは未確定
+      self.status = 'trying';
+      self.ontrying(tryingTempText);
     }
 
     self.#recognition.onerror = function(event) {
