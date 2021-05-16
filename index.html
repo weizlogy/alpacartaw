@@ -15,6 +15,7 @@
     <script defer src="translate.js"></script>
     <script defer src="livelog.js"></script>
     <script defer src="speakeradaptation.js"></script>
+    <script defer src="overflow.js"></script>
     <script defer src="index.js"></script>
   </head>
 
@@ -135,9 +136,6 @@
         <div class="item"><span>Foreign source</span>
           <input type="text" name="obs-text-foreign-source"/>
         </div>
-        <div class="item"><span>Silent breaker source</span>
-          <input type="text" name="obs-text-silent-source"/>
-        </div>
         <div class="item"><span>Timeout</span>
           <input type="text" name="obs-text-timeout"/>
         </div>
@@ -151,6 +149,33 @@
           <label>
             <input type="checkbox" name="obs-use-interim"/><span>Use interimResults</span>
           </label>
+        </div>
+      </div>
+
+      <div name="overflow">
+        <h3>Overflow settings</h3>
+        <div class="item">
+          <label>
+            <input type="checkbox" name="overflow-use-it" /><span>Use overflow</span>
+          </label>
+        </div>
+        <div class="item"><span>Overflow source</span>
+          <input type="text" name="overflow-source"/>
+        </div>
+        <div class="item"><span>Overflow start timeout</span>
+          <input type="text" name="overflow-start-timeout"/>
+        </div>
+        <div class="item"><span>Overflow keep timeout</span>
+          <input type="text" name="overflow-keep-timeout"/>
+        </div>
+        <div class="item"><span>Overflow limit</span>
+          <input type="text" name="overflow-limit"/>
+        </div>
+        <div class="item"><span>Overflow resolution</span>
+          <input type="text" name="overflow-resolution"/>
+        </div>
+        <div class="item"><span>Overflow format</span>
+          <input type="text" name="overflow-format"/>
         </div>
       </div>
     </div>
@@ -183,7 +208,7 @@
     </div>
 
     <div class="fotter flex-container">
-      <div>v1.3.1</div>
+      <div>v1.3.2</div>
       <div><a target="_blank" rel="noreferrer" title="Github" href="https://github.com/weizlogy/alpacartaw">Github</div>
       <div><a target="_blank" rel="noreferrer" title="Twitter" href="https://twitter.com/twilightalpaca">Twitter</div>
     </div>

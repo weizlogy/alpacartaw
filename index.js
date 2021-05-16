@@ -3,9 +3,14 @@ var obssocket = new RTAWOBSWebSocket();
 var translate = new RTAWTranslate();
 var livelog = new RTAWLiveLog();
 var adaptation = new RTAWSpeakerAdaptation();
+var overflow = new RTAWOverflow();
+
+window.addEventListener('load', function() {
+  console.log('loaded.');
+});
 
 window.addEventListener('DOMContentLoaded', function() {
-  console.log('loaded.');
+  console.log('DOMContentLoaded.');
   // 音声合成のVOICE一覧生成
   speechSynthesis.onvoiceschanged = () => {
     console.log('onvoiceschanged.');
@@ -111,6 +116,8 @@ window.addEventListener('DOMContentLoaded', function() {
 
       let text = value;
 
+      overflow.timerCheck();
+
       let diagnostic = document.querySelector('div[name="NativeLang"]');
       diagnostic.classList.remove('final');
       diagnostic.textContent = text;
@@ -130,6 +137,9 @@ window.addEventListener('DOMContentLoaded', function() {
       console.log('[FINAL]', value);
 
       let text = value;
+
+      overflow.timerStart();
+      overflow.setTempText(text);
 
       let diagnostic = document.querySelector('div[name="NativeLang"]');
       diagnostic.classList.add('final');
@@ -170,6 +180,8 @@ window.addEventListener('DOMContentLoaded', function() {
     listener.onend = () => {
       console.log('onend')
       if (!listener.isRecognizing) {
+        // overflow監視停止
+        overflow.stop();
         return;
       }
       // 音声認識が終了したら再開させるところ
@@ -181,6 +193,25 @@ window.addEventListener('DOMContentLoaded', function() {
 
     status.textContent = 'Starting'
     status.classList.add('status-ok');
+
+    // overflow監視スタート
+    overflow.onchanged = (text) => {
+      console.log('overflow.onchanged', text);
+
+      obssocket.toOBS(text,
+        document.querySelector('input[name="overflow-source"]').value || 'overflow',
+        NaN, false);
+    };
+
+    if (document.querySelector('input[name="overflow-use-it"]').checked) {
+      overflow.start(
+        parseInt(document.querySelector('input[name="overflow-start-timeout"]').value, 10) || 10000,
+        parseInt(document.querySelector('input[name="overflow-keep-timeout"]').value, 10) || 30000,
+        parseInt(document.querySelector('input[name="overflow-limit"]').value, 10) || 3,
+        parseInt(document.querySelector('input[name="overflow-resolution"]').value, 10) || 3,
+        document.querySelector('input[name="overflow-format"]').value || '${text}(${translate})'
+      );
+    }
   }
   document.querySelector('div[name="speech-translate-submit"]').onclick = function() {
     AlpataTranslate("吾輩はアルパカである。名前はまだない。", false);
@@ -211,6 +242,8 @@ window.addEventListener('DOMContentLoaded', function() {
     }
     // 読み上げる
     AlpataSpeaks(translated, 'voice-target-foreign');
+    // overflowに登録
+    overflow.setTempTranslate(translated);
   };
   translate.onerror = (text, error) => {
     const output = document.querySelector('div[name="ForeignLang"]');
