@@ -45,6 +45,7 @@ class RTAWOverflow {
   };
 
   stop = () => {
+    const self = this;
     clearInterval(self.#intervalid);
   }
 

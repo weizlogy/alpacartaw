@@ -107,7 +107,7 @@ window.addEventListener('DOMContentLoaded', function() {
     const continuity =
       document.querySelector('input[name="speech-recognition-continuity"]').checked;
     const subtitleLimit =
-      parseInt(document.querySelector(`input[name="obs-text-subtitle-limit"]`).value, 10);
+      parseInt(document.querySelector(`input[name="obs-text-subtitle-limit-native"]`).value, 10);
     const subtitleScrollTime =
       parseInt(document.querySelector(`input[name="obs-text-subtitle-scroll-time"]`).value, 10);
 
@@ -127,9 +127,9 @@ window.addEventListener('DOMContentLoaded', function() {
           if (startIndex < 0) {
             startIndex = 0;
           }
-          text = text.substr(startIndex);
+          text = text.substr(startIndex, Math.min(text.length, subtitleLimit));
         }
-        DelayStreaming('native', text, NaN, false, false, true);
+        DelayStreaming('native', text, NaN, false, false, true, true);
       }
     };
 
@@ -145,35 +145,31 @@ window.addEventListener('DOMContentLoaded', function() {
       diagnostic.classList.add('final');
       diagnostic.textContent = text;
 
-      await new Promise(async (resolve, _) => {
-        // 自動消去タイムアウト時間を取得して渡す
-        const timeout = parseInt(document.querySelector(`input[name="obs-text-timeout"]`).value, 10);
-        DelayStreaming('native', text, timeout, true, true, false);
+      const source = document.querySelector('input[name="obs-text-native-source"]').value || 'native';
+      const timeout = parseInt(document.querySelector(`input[name="obs-text-timeout"]`).value, 10);
 
-        // 文字数制限があるなら
-        if (!isNaN(subtitleLimit)) {
-          let remainTimeout = 300;
-          if (!isNaN(subtitleScrollTime)) {
-            remainTimeout = subtitleScrollTime;
-          }
-          let count = text.length - subtitleLimit
-          for (let i = 0; i < count; i++) {
-            // 次の音声認識の未確定分の取得が始まったら、止める
-            if (listener.status == 'trying') {
-              break;
-            }
-            await new Promise((rs, _) => {
-              setTimeout(() => {
-                rs();
-              }, remainTimeout);
-            }).then(() => {
-              let tempText = text.substr(i + 1);
-              DelayStreaming('native', tempText, timeout, false, false, false);
-            });
-          }
+      // 文字数制限なしか字数制限以下はそのままだ
+      if (isNaN(subtitleLimit) || text.length <= subtitleLimit) {
+        DelayStreaming(source, text, timeout, true, true, false, true);
+        return;
+      }
+
+      // 先に読み上げと翻訳をさせる
+      DelayStreaming(source, text, timeout, true, true, false, false);
+
+      let remainTimeout = 300;
+      if (!isNaN(subtitleScrollTime)) {
+        remainTimeout = subtitleScrollTime;
+      }
+
+      const scroller = new RTAWSubtitleScroller();
+      for await (const tempText of scroller.iterate(text, remainTimeout, subtitleLimit)) {
+        if (listener.status == 'trying') {
+          scroller.break();
+          break;
         }
-        resolve();
-      });
+        DelayStreaming(source, tempText, timeout, false, false, false, true);
+      }
 
     };
 
@@ -224,15 +220,41 @@ window.addEventListener('DOMContentLoaded', function() {
   }
 
   // 翻訳処理のイベントハンドラー
-  translate.ondone = (text, translated) => {
+  translate.ondone = async (text, translated) => {
     const output = document.querySelector('div[name="ForeignLang"]');
     output.classList.add('final');
     output.textContent = translated;
-    // OBSに送信するけど別に待たなくていいですはい
-    obssocket.toOBS(translated,
-      document.querySelector('input[name="obs-text-foreign-source"]').value || 'foreign',
-      parseInt(document.querySelector(`input[name="obs-text-timeout"]`).value, 10),
-      false);
+
+    // 翻訳結果のスクロール処理
+    const source = document.querySelector('input[name="obs-text-foreign-source"]').value || 'foreign';
+    const timeout = parseInt(document.querySelector(`input[name="obs-text-timeout"]`).value, 10);
+    const subtitleLimit =
+      parseInt(document.querySelector(`input[name="obs-text-subtitle-limit-foreign"]`).value, 10);
+    const subtitleScrollTime =
+      parseInt(document.querySelector(`input[name="obs-text-subtitle-scroll-time"]`).value, 10);
+    // 文字数制限なしか字数制限以下はそのままだ
+    if (isNaN(subtitleLimit) || translated.length <= subtitleLimit) {
+      DelayStreaming(source, translated, timeout, true, false, false, true);
+      return;
+    }
+
+    // 先に読み上げ
+    DelayStreaming(source, translated, timeout, true, false, false, false);
+
+    let remainTimeout = 300;
+    if (!isNaN(subtitleScrollTime)) {
+      remainTimeout = subtitleScrollTime;
+    }
+
+    const scroller = new RTAWSubtitleScroller();
+    for await (const tempText of scroller.iterate(translated, remainTimeout, subtitleLimit)) {
+      if (listener.status == 'trying') {
+        scroller.break();
+        break;
+      }
+      DelayStreaming(source, tempText, timeout, false, false, false, true);
+    }
+
     // LiveLog
     if (document.querySelector('input[name="live-log-use-it"]').checked) {
       const discordapikey = document.querySelector('input[name="live-log-apikey"]').value;
@@ -240,8 +262,6 @@ window.addEventListener('DOMContentLoaded', function() {
       const discordurlparam2 = document.querySelector('input[name="live-log-param2"]').value;
       livelog.exec(text, translated, discordapikey, discordurlparam1, discordurlparam2);
     }
-    // 読み上げる
-    AlpataSpeaks(translated, 'voice-target-foreign');
     // overflowに登録
     overflow.setTempTranslate(translated);
   };
@@ -344,11 +364,13 @@ function AlpataSpeaks(text, targetName, isPrioritize) {
   speechSynthesis.speak(utter);
 }
 
-function DelayStreaming(sourceName, text, timeout, isSpeak, isTranslate, isInterim) {
+function DelayStreaming(sourceName, text, timeout, isSpeak, isTranslate, isInterim, isStream) {
   // OBSに送信するけど別に待たなくていい
-  obssocket.toOBS(text,
-    document.querySelector(`input[name="obs-text-${sourceName}-source"]`).value || sourceName,
-    timeout, isInterim);
+  if (isStream) {
+    obssocket.toOBS(text,
+      document.querySelector(`input[name="obs-text-${sourceName}-source"]`).value || sourceName,
+      timeout, isInterim);
+  }
   if (isSpeak) {
     // 読み上げる
     AlpataSpeaks(text, `voice-target-${sourceName}`, sourceName == 'native');
