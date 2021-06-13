@@ -27,8 +27,9 @@ class RTAWTranslate {
     }).done(function(data) {
       self.ondone(text, data["translated"]);
     })
-    .fail(function(data) {
-      self.onerror(data);
+    .fail(function(XMLHttpRequest, textStatus, errorThrown) {
+      console.log('translate-fail', XMLHttpRequest.status, textStatus, errorThrown);
+      self.onerror(text, `${textStatus}. ${errorThrown}.`);
     })
     .always(() => {
       window[fname] = null;
