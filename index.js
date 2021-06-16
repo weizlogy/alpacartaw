@@ -4,6 +4,7 @@ var translate = new RTAWTranslate();
 var livelog = new RTAWLiveLog();
 var adaptation = new RTAWSpeakerAdaptation();
 var overflow = new RTAWOverflow();
+var spcommand = new RTAWSpeechCommands();
 
 window.addEventListener('load', function() {
   console.log('loaded.');
@@ -145,6 +146,11 @@ window.addEventListener('DOMContentLoaded', function() {
       diagnostic.classList.add('final');
       diagnostic.textContent = text;
 
+      // コマンド登録
+      if (document.querySelector('input[name="obs-replay-use-it"]').checked) {
+        spcommand.prepare(text);
+      }
+
       const source = document.querySelector('input[name="obs-text-native-source"]').value || 'native';
       const timeout = parseInt(document.querySelector(`input[name="obs-text-timeout"]`).value, 10);
 
@@ -207,6 +213,28 @@ window.addEventListener('DOMContentLoaded', function() {
         parseInt(document.querySelector('input[name="overflow-resolution"]').value, 10) || 3,
         document.querySelector('input[name="overflow-format"]').value || '${text}(${translate})'
       );
+    }
+
+    // リプレイ機能をスタート
+    if (document.querySelector('input[name="obs-replay-use-it"]').checked) {
+      spcommand.doReplay = (scene) => {
+        obssocket.saveReplayBuffer();
+        obssocket.setCurrentScene(scene);
+      };
+      const replaykeyword = {};
+      const key1 = document.querySelector('input[name="obs-replay-keyword-1"]').value;
+      const key2 = document.querySelector('input[name="obs-replay-keyword-2"]').value;
+      const key3 = document.querySelector('input[name="obs-replay-keyword-3"]').value;
+      if (key1) {
+        replaykeyword[key1] = document.querySelector('input[name="obs-replay-scene-1"]').value;
+      }
+      if (key2) {
+        replaykeyword[key2] = document.querySelector('input[name="obs-replay-scene-2"]').value;
+      }
+      if (key3) {
+        replaykeyword[key3] = document.querySelector('input[name="obs-replay-scene-3"]').value;
+      }
+      spcommand.start(replaykeyword);
     }
   }
   document.querySelector('div[name="speech-translate-submit"]').onclick = function() {

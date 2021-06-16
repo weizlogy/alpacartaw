@@ -134,4 +134,29 @@ class RTAWOBSWebSocket {
       resolve('');
     });
   };
+
+  saveReplayBuffer = () => {
+    if (this.#socket == null || this.#socket.readyState != 1) {
+      resolve('websocket is not ready.');
+      return;
+    }
+
+    this.#socket.send(JSON.stringify({
+      'request-type': 'SaveReplayBuffer',
+      'message-id': 'savereplaybuffer-req',
+    }));
+  };
+  setCurrentScene = (sneceName) => {
+    if (this.#socket == null || this.#socket.readyState != 1) {
+      resolve('websocket is not ready.');
+      return;
+    }
+
+    this.#socket.send(JSON.stringify({
+      'request-type': 'SetCurrentScene',
+      'message-id': 'setcurrentscene-req',
+      'scene-name': sneceName
+    }));
+  };
+
 };
