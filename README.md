@@ -295,6 +295,8 @@ Windowsのみ
 
 - 本機能には OBSプラグイン「Advanced Scene Switcher」もしくは相当の機能が必要。（リプレイ再生後のシーン戻し用）
 
+- 本機能には OBSプラグイン「Directory waitch miedia」もしくは相当の機能が必要。（リプライバッファ最新保存をメディアソースに自動設定する用）
+
 ## Use replay
 
 Replay機能を有効にする。（ON：する / OFF：しない）
