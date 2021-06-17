@@ -24,6 +24,11 @@ class RTAWSpeechCommands {
 
   prepare = (command) => {
     const self = this;
+    // Dispatchする
+    const info = self.#replayKeyword[command];
+    if (!info) {
+      return;
+    }
     self.#buffer.push(command);
   };
 
@@ -34,11 +39,10 @@ class RTAWSpeechCommands {
     if (!command) {
       return;
     }
-    // Dispatchする
-    const scene = self.#replayKeyword[command];
-    if (!scene) {
+    const info = self.#replayKeyword[command];
+    if (!info['scene']) {
       return;
     }
-    self.doReplay(scene);
+    self.doReplay(info['scene'], info['savebuffer']);
   };
 };

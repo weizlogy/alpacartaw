@@ -217,22 +217,35 @@ window.addEventListener('DOMContentLoaded', function() {
 
     // リプレイ機能をスタート
     if (document.querySelector('input[name="obs-replay-use-it"]').checked) {
-      spcommand.doReplay = (scene) => {
-        obssocket.saveReplayBuffer();
+      spcommand.doReplay = (scene, issave) => {
+        if (issave) {
+          console.log('saveReplayBuffer');
+          obssocket.saveReplayBuffer();
+        }
+          console.log('setCurrentScene', scene);
         obssocket.setCurrentScene(scene);
       };
       const replaykeyword = {};
       const key1 = document.querySelector('input[name="obs-replay-keyword-1"]').value;
       const key2 = document.querySelector('input[name="obs-replay-keyword-2"]').value;
-      const key3 = document.querySelector('input[name="obs-replay-keyword-3"]').value;
+      const keyrepeat = document.querySelector('input[name="obs-replay-keyword-repeat"]').value;
       if (key1) {
-        replaykeyword[key1] = document.querySelector('input[name="obs-replay-scene-1"]').value;
+        replaykeyword[key1] = {
+          scene: document.querySelector('input[name="obs-replay-scene-1"]').value,
+          savebuffer: true
+        };
       }
       if (key2) {
-        replaykeyword[key2] = document.querySelector('input[name="obs-replay-scene-2"]').value;
+        replaykeyword[key2] = {
+          scene: document.querySelector('input[name="obs-replay-scene-2"]').value,
+          savebuffer: true
+        };
       }
-      if (key3) {
-        replaykeyword[key3] = document.querySelector('input[name="obs-replay-scene-3"]').value;
+      if (keyrepeat) {
+        replaykeyword[keyrepeat] = {
+          scene: document.querySelector('input[name="obs-replay-scene-repeat"]').value,
+          savebuffer: false
+        };
       }
       spcommand.start(replaykeyword);
     }

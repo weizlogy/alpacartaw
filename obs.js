@@ -137,7 +137,7 @@ class RTAWOBSWebSocket {
 
   saveReplayBuffer = () => {
     if (this.#socket == null || this.#socket.readyState != 1) {
-      resolve('websocket is not ready.');
+      console.log('websocket is not ready.');
       return;
     }
 
@@ -148,7 +148,7 @@ class RTAWOBSWebSocket {
   };
   setCurrentScene = (sneceName) => {
     if (this.#socket == null || this.#socket.readyState != 1) {
-      resolve('websocket is not ready.');
+      console.log('websocket is not ready.');
       return;
     }
 
