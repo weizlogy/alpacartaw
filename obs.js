@@ -62,6 +62,8 @@ class RTAWOBSWebSocket {
           }
           self.onconnected(event);
           break;
+        default:
+          break;
       }
     });
   };

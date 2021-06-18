@@ -217,13 +217,15 @@ window.addEventListener('DOMContentLoaded', function() {
 
     // リプレイ機能をスタート
     if (document.querySelector('input[name="obs-replay-use-it"]').checked) {
+      const movescenetimeout =
+        parseInt(document.querySelector('input[name="obs-replay-move-scene-timeout"]').value, 10) || 5000;
       spcommand.doReplay = (scene, issave) => {
         if (issave) {
-          console.log('saveReplayBuffer');
           obssocket.saveReplayBuffer();
         }
-          console.log('setCurrentScene', scene);
-        obssocket.setCurrentScene(scene);
+        setTimeout(() => {
+          obssocket.setCurrentScene(scene);
+        }, movescenetimeout);
       };
       const replaykeyword = {};
       const key1 = document.querySelector('input[name="obs-replay-keyword-1"]').value;
