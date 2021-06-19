@@ -40,9 +40,6 @@ class RTAWSpeechCommands {
       return;
     }
     const info = self.#replayKeyword[command];
-    if (!info['scene']) {
-      return;
-    }
     self.doReplay(info['scene'], info['savebuffer']);
   };
 };

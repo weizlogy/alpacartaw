@@ -36,6 +36,9 @@ class RTAWOverflow {
     self.#format = format;
 
     self.#intervalid = setInterval((time) => {
+      if (self.#textList.length == 0) {
+        return;
+      }
       self.#textList.forEach((item) => { item.timeout -= time; });
       self.#textList = self.#textList.filter((value) => { return value.timeout > 0 });
 
