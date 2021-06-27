@@ -5,8 +5,9 @@ class RTAWOBSWebSocket {
   onconnected = (event) => { };
 
   #socket = null;
-  #timeoutId = {};
   #password = '';
+
+  #worker = new Worker('worker/obsworker.js');
 
   constructor() {  }
 
@@ -119,21 +120,10 @@ class RTAWOBSWebSocket {
         timeout = 5000;
       }
 
-      new Promise((rs, _) => {
-        if (self.#timeoutId[sourceName]) {
-          console.log('timeout clear. ' + sourceName);
-          clearTimeout(self.#timeoutId[sourceName]);
-        }
-        self.#timeoutId[sourceName] = setTimeout(() => {
-          console.log('timeout start. ' + sourceName);
-          rs(sourceName);
-        }, timeout);
-      }).then(name => {
-        console.log('timeout move. ' + name)
-        self.toOBS('', name, NaN);
-      })
-
-      resolve('');
+      self.#worker.onmessage = (e) => {
+        self.toOBS('', e.data['source'], NaN);
+      };
+      self.#worker.postMessage({ source: sourceName, timer: timeout });
     });
   };
 

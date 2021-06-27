@@ -3,8 +3,9 @@ class RTAWSpeechCommands {
   doReplay = (scene) => {};
 
   #buffer = [];
-  #intervalid;
   #replayKeyword = {};
+
+  #worker = new Worker('worker/speechcommandworker.js');
 
   constructor() { };
 
@@ -14,12 +15,11 @@ class RTAWSpeechCommands {
     self.#replayKeyword = keys;
     console.log('RTAWSpeechCommands', self.#replayKeyword);
 
-    if (self.#intervalid) {
-      clearInterval(self.#intervalid);
-    }
-    self.#intervalid = setInterval(() => {
+    self.#worker.onmessage = (e) => {
       self.exec();
-    }, 1000);
+    };
+    self.#worker.postMessage({ command: 'clear' });
+    self.#worker.postMessage({ command: 'start', timer: 1000 });
   };
 
   prepare = (command) => {

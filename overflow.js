@@ -8,11 +8,12 @@ class RTAWOverflow {
   #resolution;
   #format;
 
-  #timerid;
   #tempText;
   #tempTranslate;
 
-  #intervalid;
+  #isCheck = false;
+
+  #worker = new Worker('worker/overflowworker.js');
 
   onchanged = (text) => {};
   onerror = (error) => {};
@@ -35,21 +36,30 @@ class RTAWOverflow {
     self.#resolution = resolution;
     self.#format = format;
 
-    self.#intervalid = setInterval((time) => {
-      if (self.#textList.length == 0) {
-        return;
+    self.#worker.onmessage = (e) => {
+      switch (e.data['command']) {
+        case 'interval':
+          if (self.#textList.length == 0) {
+            return;
+          }
+          const time = e.data['timer'];
+          self.#textList.forEach((item) => { item.timeout -= time; });
+          self.#textList = self.#textList.filter((value) => { return value.timeout > 0 });
+
+          self.onchanged( self.#toText() );
+          break;
+
+        case 'timer':
+          self.#isCheck = false;
+          break;
       }
-      self.#textList.forEach((item) => { item.timeout -= time; });
-      self.#textList = self.#textList.filter((value) => { return value.timeout > 0 });
-
-      self.onchanged( self.#toText() );
-
-    }, self.#keepTime / self.#resolution, self.#keepTime / self.#resolution);
+    };
+    self.#worker.postMessage({ command: 'start', timer: self.#keepTime / self.#resolution });
   };
 
   stop = () => {
     const self = this;
-    clearInterval(self.#intervalid);
+    self.#worker.postMessage({ command: 'clear' });
   }
 
   #add = () => {
@@ -66,7 +76,6 @@ class RTAWOverflow {
     });
 
     if (self.#textList.length > self.#limit) {
-      //self.#textList.shift();
       self.#textList = self.#textList.slice(self.#textList.length - self.#limit)
     }
   };
@@ -83,26 +92,22 @@ class RTAWOverflow {
   timerStart = () => {
     const self = this;
 
-    console.log('overflow timerStart');
-
     self.#tempText = '';
     self.#tempTranslate = '';
 
-    self.#timerid = setTimeout(() => {
-      self.#timerid = null;
-    }, self.#startTime);
+    self.#isCheck = true;
+    self.#worker.postMessage({ command: 'timerstart', timer: self.#startTime });
   };
 
   timerCheck = () => {
     const self = this;
 
-    console.log('overflow timerCheck');
-
-    if (self.#timerid) {
+    if (self.#isCheck) {
+      console.log('overflow timerCheck', self.#textList);
       self.#add();
       self.onchanged( self.#toText() );
-      clearTimeout(self.#timerid);
-      self.#timerid = null;
+      self.#isCheck = false;
+      self.#worker.postMessage({ command: 'timerclear' });
     }
   };
 };
