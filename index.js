@@ -240,6 +240,16 @@ window.addEventListener('DOMContentLoaded', function() {
       }
       spcommand.start(replaykeyword);
     }
+
+    // livelog機能をスタート
+    if (document.querySelector('input[name="live-log-use-it"]').checked) {
+      const discordapikey = document.querySelector('input[name="live-log-apikey"]').value;
+      const discordurlparam1 = document.querySelector('input[name="live-log-param1"]').value;
+      const discordurlparam2 = document.querySelector('input[name="live-log-param2"]').value;
+      livelog.start(10000, discordapikey, discordurlparam1, discordurlparam2);
+      console.log('livelog start');
+    }
+
   }
   document.querySelector('div[name="speech-translate-submit"]').onclick = function() {
     AlpataTranslate("吾輩はアルパカである。名前はまだない。", false);
@@ -256,6 +266,13 @@ window.addEventListener('DOMContentLoaded', function() {
     const output = document.querySelector('div[name="ForeignLang"]');
     output.classList.add('final');
     output.textContent = translated;
+
+    // LiveLog
+    if (document.querySelector('input[name="live-log-use-it"]').checked) {
+      livelog.exec(text, translated);
+    }
+    // overflowに登録
+    overflow.setTempTranslate(translated);
 
     // 翻訳結果のスクロール処理
     const source = document.querySelector('input[name="obs-text-foreign-source"]').value || 'foreign';
@@ -286,26 +303,13 @@ window.addEventListener('DOMContentLoaded', function() {
       }
       DelayStreaming(source, tempText, timeout, false, false, false, true);
     }
-
-    // LiveLog
-    if (document.querySelector('input[name="live-log-use-it"]').checked) {
-      const discordapikey = document.querySelector('input[name="live-log-apikey"]').value;
-      const discordurlparam1 = document.querySelector('input[name="live-log-param1"]').value;
-      const discordurlparam2 = document.querySelector('input[name="live-log-param2"]').value;
-      livelog.exec(text, translated, discordapikey, discordurlparam1, discordurlparam2);
-    }
-    // overflowに登録
-    overflow.setTempTranslate(translated);
   };
   translate.onerror = (text, error) => {
     const output = document.querySelector('div[name="ForeignLang"]');
     output.textContent = "[ERROR] " + error;
     // LiveLog
     if (document.querySelector('input[name="live-log-use-it"]').checked) {
-      const discordapikey = document.querySelector('input[name="live-log-apikey"]').value;
-      const discordurlparam1 = document.querySelector('input[name="live-log-param1"]').value;
-      const discordurlparam2 = document.querySelector('input[name="live-log-param2"]').value;
-      livelog.exec(text, error, discordapikey, discordurlparam1, discordurlparam2);
+      livelog.exec(text, error);
     }
   };
 
