@@ -55,6 +55,7 @@ class RTAWListener {
     self.#recognition.onerror = function(event) {
       self.status = 'error';
       console.log(event);
+      self.onend();
     }
 
     self.#recognition.onend = function(event) {
