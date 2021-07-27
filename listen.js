@@ -55,7 +55,7 @@ class RTAWListener {
     self.#recognition.onerror = function(event) {
       self.status = 'error';
       console.log(event);
-      self.onend();
+      self.#recognition.stop();  // stopしたらonendが発生する->即再開する
     }
 
     self.#recognition.onend = function(event) {
@@ -69,7 +69,11 @@ class RTAWListener {
 
     self.#recognition.lang = lang;
     self.#recognition.continuous = continuity;
-    self.#recognition.start();
+    try {
+      self.#recognition.start();
+    } catch (ex) {
+      console.log(ex);
+    }
     self.status = 'start';
   };
 
