@@ -2,6 +2,7 @@ class RTAWOBSWebSocket {
 
   onerror = (error) => { };
   onopen = (event) => { };
+  onclose = (event) => { };
   onconnected = (event) => { };
 
   #socket = null;
@@ -21,6 +22,11 @@ class RTAWOBSWebSocket {
     // エラー処理
     this.#socket.addEventListener('error', function (error) {
       self.onerror(error);
+    });
+
+    // ソケットクローズしたとき
+    this.#socket.addEventListener('close', function (event) {
+      self.onclose(event);
     });
 
     // ソケットが開いたら認証開始

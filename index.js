@@ -81,6 +81,17 @@ window.addEventListener('DOMContentLoaded', function() {
     obssocket.onopen = (event) => {
       status.setAttribute('title', 'OPEN');
     };
+    obssocket.onclose = (event) => {
+      console.log('obswebsocket-close', event);
+
+      status.setAttribute('title', 'CLOSE');
+      status.classList.remove('status-ok');
+      status.classList.remove('status-ng');
+
+      if (document.querySelector('input[name="obs-auto-reconnect"]').checked) {
+        obssocket.start(ipaddr, port, password, protocol);
+      }
+    };
     obssocket.onconnected = (event) => {
       status.setAttribute('title', 'CONNECTED');
       status.classList.add('status-ok');

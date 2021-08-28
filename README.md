@@ -182,6 +182,12 @@ OBS：26.1.1
 
 OBS-Websocket：4.9.0
 
+## Auto reconnect
+
+OBSとの接続が切れた場合に自動で再接続するか？（ON：する / OFF：しない）
+
+デフォルト：OFF
+
 ## IPAddr
 
 OBSがインストールされているPCのIPv4アドレスを設定する。
