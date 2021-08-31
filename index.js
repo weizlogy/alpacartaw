@@ -273,20 +273,25 @@ window.addEventListener('DOMContentLoaded', function() {
   }
 
   // 翻訳処理のイベントハンドラー
-  translate.ondone = async (text, translated) => {
+  translate.ondone = async (text, translated, is2ndLang) => {
     const output = document.querySelector('div[name="ForeignLang"]');
     output.classList.add('final');
     output.textContent = translated;
 
     // LiveLog
     if (document.querySelector('input[name="live-log-use-it"]').checked) {
-      livelog.exec(text, translated);
+      if (!is2ndLang) {
+        livelog.exec(text, translated);
+      }
     }
     // overflowに登録
-    overflow.setTempTranslate(translated);
+    overflow.setTempTranslate(translated, is2ndLang);
 
     // 翻訳結果のスクロール処理
-    const source = document.querySelector('input[name="obs-text-foreign-source"]').value || 'foreign';
+    let source = document.querySelector('input[name="obs-text-foreign-source"]').value || 'foreign';
+    if (is2ndLang) {
+      source = document.querySelector('input[name="obs-text-foreign2-source"]').value || 'foreign2';
+    }
     const timeout = parseInt(document.querySelector(`input[name="obs-text-timeout"]`).value, 10);
     const subtitleLimit =
       parseInt(document.querySelector(`input[name="obs-text-subtitle-limit-foreign"]`).value, 10);
@@ -427,6 +432,12 @@ function DelayStreaming(sourceName, text, timeout, isSpeak, isTranslate, isInter
     const apikey = document.querySelector('input[name="gas-deploy-key"]').value || 'AKfycbx76Gd_ytJJxInNVqVMUhEXpzEL1zsZpb_vRw-Z7S3ZR6n-5dM'
     const source = document.querySelector('input[name="gas-source"]').value || 'ja'
     const target = document.querySelector('input[name="gas-target"]').value || 'en'
+    const target2 = document.querySelector('input[name="gas-target-2"]').value || ''
     translate.exec(text, apikey, source, target);
+
+    if (target2) {
+      // 第二言語フラグ立て
+      translate.exec(text, apikey, source, target2, true);
+    }
   }
 }

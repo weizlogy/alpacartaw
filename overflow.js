@@ -10,6 +10,7 @@ class RTAWOverflow {
 
   #tempText;
   #tempTranslate;
+  #tempTranslate2;
 
   #isCheck = false;
 
@@ -65,11 +66,16 @@ class RTAWOverflow {
   #add = () => {
     const self = this;
 
+    if (!self.#format) {
+      return;
+    }
+
     console.log('overflow add', self.#tempText);
 
     const formatText =
       self.#format.replace('${text}', self.#tempText)
        .replace('${translate}', self.#tempTranslate)
+       .replace('${translate2}', self.#tempTranslate2)
     self.#textList.push({
       timeout: self.#keepTime,
       text: formatText
@@ -84,8 +90,12 @@ class RTAWOverflow {
     const self = this;
     self.#tempText = text;
   };
-  setTempTranslate = (text) => {
+  setTempTranslate = (text, is2ndLang) => {
     const self = this;
+    if (is2ndLang) {
+      self.#tempTranslate2 = text;
+      return;
+    }
     self.#tempTranslate = text;
   };
 
@@ -94,6 +104,7 @@ class RTAWOverflow {
 
     self.#tempText = '';
     self.#tempTranslate = '';
+    self.#tempTranslate2 = '';
 
     self.#isCheck = true;
     self.#worker.postMessage({ command: 'timerstart', timer: self.#startTime });

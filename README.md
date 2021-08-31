@@ -108,6 +108,12 @@ function doGet(e) {
 
 デフォルト：en
 
+## Foreign lang 2
+
+翻訳対象の第二言語を設定する。未指定なら翻訳しない。
+
+デフォルト：なし
+
 ## Test
 
 翻訳をテスト実行する。
@@ -233,6 +239,12 @@ OBSとの接続に失敗した。
 翻訳対象の言語のOBSのテキストソース名を設定する。
 
 デフォルト：foreign
+
+## Foreign source 2
+
+翻訳対象の第二言語のOBSのテキストソース名を設定する。
+
+デフォルト：foreign2
 
 ## Silent breaker source
 

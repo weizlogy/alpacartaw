@@ -1,11 +1,11 @@
 class RTAWTranslate {
 
-  ondone = (text, translated) => {};
+  ondone = (text, translated, is2ndLang) => {};
   onerror = (error) => {};
 
   constructor() { };
 
-  exec = (text, apikey, source, target) => {
+  exec = (text, apikey, source, target, is2ndLang) => {
     const self = this;
 
     if (text === "") {
@@ -25,7 +25,7 @@ class RTAWTranslate {
       jsonpCallback: fname,
       timeout: 10000
     }).done(function(data) {
-      self.ondone(text, data["translated"]);
+      self.ondone(text, data["translated"], is2ndLang);
     })
     .fail(function(XMLHttpRequest, textStatus, errorThrown) {
       console.log('translate-fail', XMLHttpRequest.status, textStatus, errorThrown);
