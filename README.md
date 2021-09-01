@@ -150,7 +150,7 @@ function doGet(e) {
 
 母国語で音声合成をテスト実行する。
 
-## Foreign voice
+## Foreign voice / Foreign voice2
 
 翻訳対象の言語の音声を設定する。
 
