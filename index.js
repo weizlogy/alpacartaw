@@ -434,11 +434,6 @@ function DelayStreaming(sourceName, text, timeout, isSpeak, isTranslate, isInter
     const source = document.querySelector('input[name="gas-source"]').value || 'ja'
     const target = document.querySelector('input[name="gas-target"]').value || 'en'
     const target2 = document.querySelector('input[name="gas-target-2"]').value || ''
-    translate.exec(text, apikey, source, target);
-
-    if (target2) {
-      // 第二言語フラグ立て
-      translate.exec(text, apikey, source, target2, true);
-    }
+    translate.exec(text, apikey, source, target, target2);
   }
 }

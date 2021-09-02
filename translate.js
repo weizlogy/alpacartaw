@@ -5,7 +5,7 @@ class RTAWTranslate {
 
   constructor() { };
 
-  exec = (text, apikey, source, target, is2ndLang) => {
+  exec = (text, apikey, source, target, target2, is2ndLang) => {
     const self = this;
 
     if (text === "") {
@@ -33,6 +33,10 @@ class RTAWTranslate {
     })
     .always(() => {
       window[fname] = null;
+
+      if (target2) {
+        self.exec(text, apikey, source, target2, null, true);
+      }
     });
   };
 
