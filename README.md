@@ -246,12 +246,6 @@ OBSとの接続に失敗した。
 
 デフォルト：foreign2
 
-## Silent breaker source
-
-該当機能用のOBSのテキストソース名を設定する。
-
-デフォルト：silent
-
 ## Timeout
 
 OBSのテキストソースに表示された字幕が消えるまでの時間（ミリ秒）。
@@ -315,7 +309,7 @@ Windowsのみ
 
 - 本機能には OBSプラグイン「Directory waitch miedia」もしくは相当の機能が必要。（リプライバッファ最新保存をメディアソースに自動設定する用）
 
-## Use replay
+## Use replay (v1.4 -)
 
 Replay機能を有効にする。（ON：する / OFF：しない）
 
@@ -336,6 +330,46 @@ Replayを再生するためのシーン切り替え音声コマンドを設定�
 ## Replay scene
 
 keyword - Move コマンドで移動するシーン名を設定する。
+
+デフォルト：なし
+
+# Scene switch settings (v1.5 -)
+
+音声コマンドで特定のシーンへ移動する。
+
+## Use snece switcher
+
+シーンスイッチ機能を有効にする。（ON：する / OFF：しない）
+
+デフォルト：OFF
+
+## keyword - Move
+
+シーン移動する音声コマンドを設定する。
+
+デフォルト：なし
+
+## keyword - Return
+
+元のシーンに戻る音声コマンドを設定する。
+
+デフォルト：なし
+
+## Base scene
+
+keyword - Return コマンドで戻るシーン名を設定する。
+
+デフォルト：なし
+
+## Move scene
+
+keyword - Move コマンドで移動するシーン名を設定する。
+
+デフォルト：なし
+
+## Base scene
+
+keyword - Return コマンドで戻るシーン名を設定する。
 
 デフォルト：なし
 
@@ -407,12 +441,6 @@ Overflow機能を有効にする。（ON：する / OFF：しない）
 外国語の字幕に置換される。
 
 ただし、翻訳処理の解決前に新たな字幕入力が発生した場合は、外国語の字幕は空文字で置換される。
-
-# Silent breaker settings
-
-~~SilentBreaker機能は、無言状態を検知すると起動し、任意の文字列をOBSに送出、読み上げる。~~
-
-本機能の提供は終了した。
 
 # LiveLog settings
 

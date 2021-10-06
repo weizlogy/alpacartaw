@@ -159,7 +159,7 @@ window.addEventListener('DOMContentLoaded', function() {
       diagnostic.textContent = text;
 
       // コマンド登録
-      if (document.querySelector('input[name="obs-replay-use-it"]').checked) {
+      if (spcommand.isStart) {
         spcommand.prepare(text);
       }
 
@@ -227,8 +227,27 @@ window.addEventListener('DOMContentLoaded', function() {
       );
     }
 
+    let usespcommand = false;
     // リプレイ機能をスタート
     if (document.querySelector('input[name="obs-replay-use-it"]').checked) {
+      const key1 = document.querySelector('input[name="obs-replay-keyword-save"]').value;
+      const key2 = document.querySelector('input[name="obs-replay-keyword-move"]').value;
+      const scene = document.querySelector('input[name="obs-replay-scene"]').value;
+      spcommand.addReplayKeywords(key1, key2, scene);
+      usespcommand = true;
+    }
+
+    // シーン切り替え機能をスタート
+    if (document.querySelector('input[name="obs-sceneswitcher-use-it"]').checked) {
+      const key1 = document.querySelector('input[name="obs-sceneswitcher-keyword-move"]').value;
+      const key2 = document.querySelector('input[name="obs-sceneswitcher-keyword-return"]').value;
+      const scene1 = document.querySelector('input[name="obs-sceneswitcher-scene-base"]').value;
+      const scene2 = document.querySelector('input[name="obs-sceneswitcher-scene-move"]').value;
+      spcommand.addSceneswKeyword(key1, key2, scene1, scene2);
+      usespcommand = true;
+    }
+
+    if (usespcommand) {
       spcommand.doReplay = (scene, issave) => {
         if (!issave) {
           obssocket.setCurrentScene(scene);
@@ -236,23 +255,12 @@ window.addEventListener('DOMContentLoaded', function() {
         }
         obssocket.saveReplayBuffer();
       };
-      const replaykeyword = {};
-      const key1 = document.querySelector('input[name="obs-replay-keyword-save"]').value;
-      const key2 = document.querySelector('input[name="obs-replay-keyword-move"]').value;
-      if (key1) {
-        replaykeyword[key1] = {
-          savebuffer: true
-        };
-      }
-      if (key2) {
-        replaykeyword[key2] = {
-          scene: document.querySelector('input[name="obs-replay-scene"]').value,
-          savebuffer: false
-        };
-      }
-      spcommand.start(replaykeyword);
+      spcommand.doSceneSwitch = (scene) => {
+        obssocket.setCurrentScene(scene);
+      };
+      spcommand.start();
     }
-
+    
     // livelog機能をスタート
     if (document.querySelector('input[name="live-log-use-it"]').checked) {
       const discordapikey = document.querySelector('input[name="live-log-apikey"]').value;
