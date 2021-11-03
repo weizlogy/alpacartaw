@@ -5,6 +5,7 @@ var livelog = new RTAWLiveLog();
 var adaptation = new RTAWSpeakerAdaptation();
 var overflow = new RTAWOverflow();
 var spcommand = new RTAWSpeechCommands();
+var emotion = new RTAWEmotion();
 
 window.addEventListener('load', function() {
   console.log('loaded.');
@@ -163,6 +164,11 @@ window.addEventListener('DOMContentLoaded', function() {
         spcommand.prepare(text);
       }
 
+      // リスナーが終わるまで感情表現を固定する
+      if (emotion.isstart) {
+        emotion.blocking(true);
+      }
+
       const source = document.querySelector('input[name="obs-text-native-source"]').value || 'native';
       const timeout = parseInt(document.querySelector(`input[name="obs-text-timeout"]`).value, 10);
 
@@ -197,6 +203,10 @@ window.addEventListener('DOMContentLoaded', function() {
         // overflow監視停止
         overflow.stop();
         return;
+      }
+      // 感情表現の固定を解除する
+      if (emotion.isstart) {
+        emotion.blocking(false);
       }
       // 音声認識が終了したら再開させるところ
       setTimeout(() => { listener.start(lang, continuity); }, 1);
@@ -270,7 +280,28 @@ window.addEventListener('DOMContentLoaded', function() {
       console.log('livelog start');
     }
 
+    // emotion機能をスタート
+    if (document.querySelector('input[name="emotion-use-it"]').checked) {
+      const emotionkey = document.querySelector('input[name="emotion-key"]').value;
+      const happypitch = parseFloat(document.querySelector('input[name="emotion-happy-pitch"]').value, 10) || 0;
+      const happyrate = parseFloat(document.querySelector('input[name="emotion-happy-rate"]').value, 10) || 0;
+      const sadpitch = parseFloat(document.querySelector('input[name="emotion-sad-pitch"]').value, 10) || 0;
+      const sadrate = parseFloat(document.querySelector('input[name="emotion-sad-rate"]').value, 10) || 0;
+      const surprisedpitch = parseFloat(document.querySelector('input[name="emotion-surprised-pitch"]').value, 10) || 0;
+      const surprisedrate = parseFloat(document.querySelector('input[name="emotion-surprised-rate"]').value, 10) || 0;
+      const angrypitch = parseFloat(document.querySelector('input[name="emotion-angry-pitch"]').value, 10) || 0;
+      const angryrate = parseFloat(document.querySelector('input[name="emotion-angry-rate"]').value, 10) || 0;
+      emotion.start(emotionkey, {
+        "neutral": { "pitch": 0, "rate": 0 },
+        "happy": { "pitch": happypitch, "rate": happyrate },
+        "sad": { "pitch": sadpitch, "rate": sadrate },
+        "surprised": { "pitch": surprisedpitch, "rate": surprisedrate },
+        "angry": { "pitch": angrypitch, "rate": angryrate },
+      });
+      console.log('emotion start');
+    }
   }
+
   document.querySelector('div[name="speech-translate-submit"]').onclick = function() {
     AlpataTranslate("吾輩はアルパカである。名前はまだない。", false);
   }
@@ -290,6 +321,9 @@ window.addEventListener('DOMContentLoaded', function() {
     // LiveLog
     if (document.querySelector('input[name="live-log-use-it"]').checked) {
       if (!is2ndLang) {
+        if (emotion.isstart) {
+          text = `(${emotion.currentemote})` + text;
+        }
         livelog.exec(text, translated);
       }
     }
@@ -422,6 +456,12 @@ function AlpataSpeaks(text, targetName, isPrioritize) {
   utter.rate = document.querySelector(`input[name="${targetName}-rate"]`).value
   utter.voice = voice;
   utter.lang = voice.lang;
+
+  if (emotion.isstart) {
+    utter.pitch += emotion.currenteadjust['pitch'];
+    utter.rate += emotion.currenteadjust['rate'];
+  }
+
   speechSynthesis.speak(utter);
 }
 

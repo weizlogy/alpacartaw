@@ -17,6 +17,7 @@ class RTAWListener {
 
   #initialize = () => {
     const self = this;
+
     // 音声認識初期化
     self.#recognition = new SpeechRecognition();
 

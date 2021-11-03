@@ -489,6 +489,29 @@ https://discord.com/api/webhooks/**Param1**/**Param2**
 
 デフォルト：なし
 
+# Use emotion
+
+Emotion機能を有効にする。（ON：する / OFF：しない）
+
+[RFTIM](https://github.com/weizlogy/rftim)との連携を想定しているが、WebSocket経由であれば他のアプリと連携も可能。
+
+デフォルト：OFF
+
+## Key
+
+Websocketでcloud.achex.caに接続するためのキー。
+
+KeyはURLの一部(wss://cloud.achex.ca/rtaw${key})とログインユーザー名に使用する。
+
+デフォルト：なし
+
+## Happy(Sad/Surprised/Angry) - Pitch/Rate
+
+それぞれの感情に対する、PitchとRateの増減を指定する。
+
+デフォルト：0
+
+
 # 特記
 
 - 各項目はパスワード以外クライアントPCに保存し、パスワードのみ画面を閉じると削除する。

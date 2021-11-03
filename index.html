@@ -18,6 +18,7 @@
     <script defer src="overflow.js"></script>
     <script defer src="subtitlescroller.js"></script>
     <script defer src="speechcommands.js"></script>
+    <script defer src="emotion.js"></script>
     <script defer src="index.js"></script>
   </head>
 
@@ -252,7 +253,7 @@
 
     </div>
 
-    <div>
+    <div class="flex-container">
       <div name="livelog">
         <h3>LiveLog settings</h3>
         <div class="item">
@@ -268,6 +269,42 @@
         </div>
         <div class="item"><span>Param2</span>
           <input type="text" name="live-log-param2"/>
+        </div>
+      </div>
+
+      <div name="emotion">
+        <h3>Emotion settings</h3>
+        <div class="item">
+          <label>
+            <input type="checkbox" name="emotion-use-it"/><span>Use emotion</span>
+          </label>
+        </div>
+        <div class="item"><span>Key</span>
+          <input type="text" name="emotion-key"/>
+        </div>
+        <div class="item"><span>Happy - Pitch</span>
+          <input type="text" name="emotion-happy-pitch"/>
+        </div>
+        <div class="item"><span>Happy - Rate</span>
+          <input type="text" name="emotion-happy-rate"/>
+        </div>
+        <div class="item"><span>Sad - Pitch</span>
+          <input type="text" name="emotion-sad-pitch"/>
+        </div>
+        <div class="item"><span>Sad - Rate</span>
+          <input type="text" name="emotion-sad-rate"/>
+        </div>
+        <div class="item"><span>Surprised - Pitch</span>
+          <input type="text" name="emotion-surprised-pitch"/>
+        </div>
+        <div class="item"><span>Surprised - Rate</span>
+          <input type="text" name="emotion-surprised-rate"/>
+        </div>
+        <div class="item"><span>Angry - Pitch</span>
+          <input type="text" name="emotion-angry-pitch"/>
+        </div>
+        <div class="item"><span>Angry - Rate</span>
+          <input type="text" name="emotion-angry-rate"/>
         </div>
       </div>
     </div>
