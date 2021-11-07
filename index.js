@@ -270,7 +270,8 @@ window.addEventListener('DOMContentLoaded', function() {
       spcommand.doSceneSwitch = (scene) => {
         obssocket.setCurrentScene(scene);
       };
-      spcommand.start();
+      // Emotion機能のキーを間借りしちゃう
+      spcommand.start(document.querySelector('input[name="emotion-key"]').value);
     }
     
     // livelog機能をスタート

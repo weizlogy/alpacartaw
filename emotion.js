@@ -32,7 +32,7 @@ class RTAWEmotion {
       const msg =  JSON.parse(event.data);
       console.log('[Message] ', msg);
 
-      if (self.#isblock) {
+      if (self.#isblock || !msg['emotion']) {
         return;
       }
       self.currentemote = msg['emotion'] || 'neutral';
