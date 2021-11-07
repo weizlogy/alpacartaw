@@ -152,6 +152,13 @@ window.addEventListener('DOMContentLoaded', function() {
 
       let text = value;
 
+      // リスナーが終わるまで感情表現を固定する
+      if (emotion.isstart) {
+        emotion.blocking(true);
+        // 感情表現のPrefixがあればつける
+        text = text + emotion.currenteadjust['prefix'];
+      }
+
       overflow.timerStart();
       overflow.setTempText(text);
 
@@ -162,11 +169,6 @@ window.addEventListener('DOMContentLoaded', function() {
       // コマンド登録
       if (spcommand.isStart) {
         spcommand.prepare(text);
-      }
-
-      // リスナーが終わるまで感情表現を固定する
-      if (emotion.isstart) {
-        emotion.blocking(true);
       }
 
       const source = document.querySelector('input[name="obs-text-native-source"]').value || 'native';
@@ -283,20 +285,39 @@ window.addEventListener('DOMContentLoaded', function() {
     // emotion機能をスタート
     if (document.querySelector('input[name="emotion-use-it"]').checked) {
       const emotionkey = document.querySelector('input[name="emotion-key"]').value;
+      // 嬉しい
       const happypitch = parseFloat(document.querySelector('input[name="emotion-happy-pitch"]').value, 10) || 0;
       const happyrate = parseFloat(document.querySelector('input[name="emotion-happy-rate"]').value, 10) || 0;
+      const happyprefix = document.querySelector('input[name="emotion-happy-prefix"]').value || '';
+      // 悲しい
       const sadpitch = parseFloat(document.querySelector('input[name="emotion-sad-pitch"]').value, 10) || 0;
       const sadrate = parseFloat(document.querySelector('input[name="emotion-sad-rate"]').value, 10) || 0;
+      const sadprefix = document.querySelector('input[name="emotion-sad-prefix"]').value || '';
+      // 驚き
       const surprisedpitch = parseFloat(document.querySelector('input[name="emotion-surprised-pitch"]').value, 10) || 0;
       const surprisedrate = parseFloat(document.querySelector('input[name="emotion-surprised-rate"]').value, 10) || 0;
+      const surprisedprefix = document.querySelector('input[name="emotion-surprised-prefix"]').value || '';
+      // 怒り
       const angrypitch = parseFloat(document.querySelector('input[name="emotion-angry-pitch"]').value, 10) || 0;
       const angryrate = parseFloat(document.querySelector('input[name="emotion-angry-rate"]').value, 10) || 0;
+      const angryprefix = document.querySelector('input[name="emotion-angry-prefix"]').value || '';
+      // 恐れ
+      const fearfulpitch = parseFloat(document.querySelector('input[name="emotion-fearful-pitch"]').value, 10) || 0;
+      const fearfulrate = parseFloat(document.querySelector('input[name="emotion-fearful-rate"]').value, 10) || 0;
+      const fearfulprefix = document.querySelector('input[name="emotion-fearful-prefix"]').value || '';
+      // うんざり
+      const disgustedpitch = parseFloat(document.querySelector('input[name="emotion-disgusted-pitch"]').value, 10) || 0;
+      const disgustedrate = parseFloat(document.querySelector('input[name="emotion-disgusted-rate"]').value, 10) || 0;
+      const disgustedprefix = document.querySelector('input[name="emotion-disgusted-prefix"]').value || '';
+      // パラメーターを作って開始する
       emotion.start(emotionkey, {
-        "neutral": { "pitch": 0, "rate": 0 },
-        "happy": { "pitch": happypitch, "rate": happyrate },
-        "sad": { "pitch": sadpitch, "rate": sadrate },
-        "surprised": { "pitch": surprisedpitch, "rate": surprisedrate },
-        "angry": { "pitch": angrypitch, "rate": angryrate },
+        "neutral": { "pitch": 0, "rate": 0, "prefix": "" },
+        "happy": { "pitch": happypitch, "rate": happyrate, "prefix": happyprefix },
+        "sad": { "pitch": sadpitch, "rate": sadrate, "prefix": sadprefix },
+        "surprised": { "pitch": surprisedpitch, "rate": surprisedrate, "prefix": surprisedprefix },
+        "angry": { "pitch": angrypitch, "rate": angryrate, "prefix": angryprefix },
+        "fearful": { "pitch": fearfulpitch, "rate": fearfulrate, "prefix": fearfulprefix },
+        "disgusted": { "pitch": disgustedpitch, "rate": disgustedrate, "prefix": disgustedprefix },
       });
       console.log('emotion start');
     }

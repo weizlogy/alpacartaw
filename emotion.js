@@ -11,7 +11,7 @@ class RTAWEmotion {
 
   isstart = false;
 
-  constructor() {  }
+  constructor() { }
 
   start = (key, adjustdata) => {
     const self = this;
