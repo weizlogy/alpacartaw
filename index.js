@@ -155,12 +155,10 @@ window.addEventListener('DOMContentLoaded', function() {
       // リスナーが終わるまで感情表現を固定する
       if (emotion.isstart) {
         emotion.blocking(true);
-        // 感情表現のPrefixがあればつける
-        text = text + emotion.currenteadjust['prefix'];
       }
 
       overflow.timerStart();
-      overflow.setTempText(text);
+      overflow.setTempText(text + emotion.getPrefix());
 
       let diagnostic = document.querySelector('div[name="NativeLang"]');
       diagnostic.classList.add('final');
@@ -480,8 +478,8 @@ function AlpataSpeaks(text, targetName, isPrioritize) {
   utter.lang = voice.lang;
 
   if (emotion.isstart) {
-    utter.pitch += emotion.currenteadjust['pitch'];
-    utter.rate += emotion.currenteadjust['rate'];
+    utter.pitch += emotion.getAdjustPitch();
+    utter.rate += emotion.getAdjustRate();
   }
 
   speechSynthesis.speak(utter);
@@ -490,7 +488,7 @@ function AlpataSpeaks(text, targetName, isPrioritize) {
 function DelayStreaming(sourceName, text, timeout, isSpeak, isTranslate, isInterim, isStream) {
   // OBSに送信するけど別に待たなくていい
   if (isStream) {
-    obssocket.toOBS(text,
+    obssocket.toOBS(text + emotion.getPrefix(),
       document.querySelector(`input[name="obs-text-${sourceName}-source"]`).value || sourceName,
       timeout, isInterim);
   }

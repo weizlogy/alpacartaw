@@ -45,4 +45,17 @@ class RTAWEmotion {
     const self = this;
     self.#isblock = isblock;
   };
+
+  getPrefix = () => {
+    const self = this;
+    return self.currenteadjust['prefix'] || '';
+  };
+  getAdjustPitch = () => {
+    const self = this;
+    return self.currenteadjust['pitch'] || 0;
+  };
+  getAdjustRate = () => {
+    const self = this;
+    return self.currenteadjust['rate'] || 0;
+  };
 };
