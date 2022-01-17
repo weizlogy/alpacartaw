@@ -6,7 +6,8 @@ class RTAWOverflow {
   #keepTime;
   #limit;
   #resolution;
-  #format;
+  #nativeSeparator;
+  #foreignSeparator;
 
   #tempText;
   #tempTranslate;
@@ -21,21 +22,33 @@ class RTAWOverflow {
 
   constructor() { };
 
-  #toText = () => {
+  toText = () => {
     const self = this;
-    // 配列はコピーして逆順にする
-    return self.#textList.slice().reverse().reduce(
-      (pv, item) => { return pv + item.text.replace('${debugTimer}', item.timeout) + '\n' }, '');
+    return self.#textList.slice().reduce(
+      (pv, item) => { return pv + item.text + self.#nativeSeparator }, '');
   };
 
-  start = (startTime, keepTime, limit, resolution, format) => {
+  toTranslateText = () => {
+    const self = this;
+    return self.#textList.slice().reduce(
+      (pv, item) => { return pv + item.translate + self.#foreignSeparator }, '');
+  };
+
+  toTranslate2Text = () => {
+    const self = this;
+    return self.#textList.slice().reduce(
+      (pv, item) => { return pv + item.translate2 + self.#foreignSeparator }, '');
+  };
+
+  start = (startTime, keepTime, limit, resolution, nativeSeparator, foreignSeparator) => {
     const self = this;
 
     self.#startTime = startTime;
     self.#keepTime = keepTime;
     self.#limit = limit;
     self.#resolution = resolution;
-    self.#format = format;
+    self.#nativeSeparator = nativeSeparator;
+    self.#foreignSeparator = foreignSeparator;
 
     self.#worker.onmessage = (e) => {
       switch (e.data['command']) {
@@ -47,7 +60,7 @@ class RTAWOverflow {
           self.#textList.forEach((item) => { item.timeout -= time; });
           self.#textList = self.#textList.filter((value) => { return value.timeout > 0 });
 
-          self.onchanged( self.#toText() );
+          // self.onchanged( self.#toText() );
           break;
 
         case 'timer':
@@ -66,19 +79,17 @@ class RTAWOverflow {
   #add = () => {
     const self = this;
 
-    if (!self.#format) {
+    if (!self.isStart()) {
       return;
     }
 
     console.log('overflow add', self.#tempText);
 
-    const formatText =
-      self.#format.replace('${text}', self.#tempText)
-       .replace('${translate}', self.#tempTranslate)
-       .replace('${translate2}', self.#tempTranslate2)
     self.#textList.push({
       timeout: self.#keepTime,
-      text: formatText
+      text: self.#tempText,
+      translate: self.#tempTranslate,
+      translate2: self.#tempTranslate2
     });
 
     if (self.#textList.length > self.#limit) {
@@ -116,9 +127,14 @@ class RTAWOverflow {
     if (self.#isCheck) {
       console.log('overflow timerCheck', self.#textList);
       self.#add();
-      self.onchanged( self.#toText() );
+      // self.onchanged( self.#toText() );
       self.#isCheck = false;
       self.#worker.postMessage({ command: 'timerclear' });
     }
+  };
+
+  isStart = () => {
+    const self = this;
+    return self.#startTime;
   };
 };

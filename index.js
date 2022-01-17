@@ -130,7 +130,10 @@ window.addEventListener('DOMContentLoaded', function() {
 
       let text = value;
 
-      overflow.timerCheck();
+      if (overflow.isStart()) {
+        overflow.timerCheck();
+        text = overflow.toText() + text;
+      }
 
       let diagnostic = document.querySelector('div[name="NativeLang"]');
       diagnostic.classList.remove('final');
@@ -143,7 +146,7 @@ window.addEventListener('DOMContentLoaded', function() {
           }
           text = text.substr(startIndex, Math.min(text.length, subtitleLimit));
         }
-        DelayStreaming('native', text, NaN, false, false, true, true);
+        DelayStreaming('native', text, NaN, true);
       }
     };
 
@@ -151,14 +154,18 @@ window.addEventListener('DOMContentLoaded', function() {
       console.log('[FINAL]', value);
 
       let text = value;
+      let displayingText = text;
 
       // リスナーが終わるまで感情表現を固定する
       if (emotion.isstart) {
         emotion.blocking(true);
       }
 
-      overflow.timerStart();
-      overflow.setTempText(text + emotion.getPrefix());
+      if (overflow.isStart()) {
+        overflow.timerStart();
+        overflow.setTempText(text + emotion.getPrefix());
+        displayingText = overflow.toText() + displayingText + emotion.getPrefix();
+      }
 
       let diagnostic = document.querySelector('div[name="NativeLang"]');
       diagnostic.classList.add('final');
@@ -174,12 +181,15 @@ window.addEventListener('DOMContentLoaded', function() {
 
       // 文字数制限なしか字数制限以下はそのままだ
       if (isNaN(subtitleLimit) || text.length <= subtitleLimit) {
-        DelayStreaming(source, text, timeout, true, true, false, true);
+        DelayStreaming(source, displayingText, timeout, false);
+        AlpataSpeaks(text, `voice-target-${source}`, source == 'native');
+        AlpacaTranslate(text);
         return;
       }
 
       // 先に読み上げと翻訳をさせる
-      DelayStreaming(source, text, timeout, true, true, false, false);
+      AlpataSpeaks(text, `voice-target-${source}`, source == 'native');
+      AlpacaTranslate(text);
 
       let remainTimeout = 300;
       if (!isNaN(subtitleScrollTime)) {
@@ -187,12 +197,12 @@ window.addEventListener('DOMContentLoaded', function() {
       }
 
       const scroller = new RTAWSubtitleScroller();
-      for await (const tempText of scroller.iterate(text, remainTimeout, subtitleLimit)) {
+      for await (const tempText of scroller.iterate(displayingText, remainTimeout, subtitleLimit)) {
         if (listener.status == 'trying') {
           scroller.break();
           break;
         }
-        DelayStreaming(source, tempText, timeout, false, false, false, true);
+        DelayStreaming(source, tempText, timeout, false);
       }
 
     };
@@ -218,22 +228,14 @@ window.addEventListener('DOMContentLoaded', function() {
     status.textContent = 'Starting'
     status.classList.add('status-ok');
 
-    // overflow監視スタート
-    overflow.onchanged = (text) => {
-      console.log('overflow.onchanged', text);
-
-      obssocket.toOBS(text,
-        document.querySelector('input[name="overflow-source"]').value || 'overflow',
-        NaN, false);
-    };
-
     if (document.querySelector('input[name="overflow-use-it"]').checked) {
       overflow.start(
         parseInt(document.querySelector('input[name="overflow-start-timeout"]').value, 10) || 10000,
-        parseInt(document.querySelector('input[name="overflow-keep-timeout"]').value, 10) || 30000,
-        parseInt(document.querySelector('input[name="overflow-limit"]').value, 10) || 3,
+        parseInt(document.querySelector('input[name="overflow-keep-timeout"]').value, 10) || 20000,
+        parseInt(document.querySelector('input[name="overflow-limit"]').value, 10) || 2,
         parseInt(document.querySelector('input[name="overflow-resolution"]').value, 10) || 3,
-        document.querySelector('input[name="overflow-format"]').value || '${text}(${translate})'
+        document.querySelector('input[name="overflow-native-separator"]').value || '。',
+        document.querySelector('input[name="overflow-foreign-separator"]').value || '. '
       );
     }
 
@@ -347,8 +349,18 @@ window.addEventListener('DOMContentLoaded', function() {
         livelog.exec(text, translated);
       }
     }
-    // overflowに登録
-    overflow.setTempTranslate(translated, is2ndLang);
+
+    let displayingText = translated;
+
+    if (overflow.isStart()) {
+      // overflowに登録
+      overflow.setTempTranslate(translated, is2ndLang);
+      if (!is2ndLang) {
+        displayingText = overflow.toTranslateText() + displayingText;
+      } else {
+        displayingText = overflow.toTranslate2Text() + displayingText;
+      }
+    }
 
     // 翻訳結果のスクロール処理
     let source = document.querySelector('input[name="obs-text-foreign-source"]').value || 'foreign';
@@ -360,14 +372,16 @@ window.addEventListener('DOMContentLoaded', function() {
       parseInt(document.querySelector(`input[name="obs-text-subtitle-limit-foreign"]`).value, 10);
     const subtitleScrollTime =
       parseInt(document.querySelector(`input[name="obs-text-subtitle-scroll-time"]`).value, 10);
-    // 文字数制限なしか字数制限以下はそのままだ
+  
+      // 文字数制限なしか字数制限以下はそのままだ
     if (isNaN(subtitleLimit) || translated.length <= subtitleLimit) {
-      DelayStreaming(source, translated, timeout, true, false, false, true);
+      DelayStreaming(source, displayingText, timeout, false);
+      AlpataSpeaks(translated, `voice-target-${source}`, source == 'native');
       return;
     }
 
     // 先に読み上げ
-    DelayStreaming(source, translated, timeout, true, false, false, false);
+    AlpataSpeaks(translated, `voice-target-${source}`, source == 'native');
 
     let remainTimeout = 300;
     if (!isNaN(subtitleScrollTime)) {
@@ -375,12 +389,12 @@ window.addEventListener('DOMContentLoaded', function() {
     }
 
     const scroller = new RTAWSubtitleScroller();
-    for await (const tempText of scroller.iterate(translated, remainTimeout, subtitleLimit)) {
+    for await (const tempText of scroller.iterate(displayingText, remainTimeout, subtitleLimit)) {
       if (listener.status == 'trying') {
         scroller.break();
         break;
       }
-      DelayStreaming(source, tempText, timeout, false, false, false, true);
+      DelayStreaming(source, tempText, timeout, false);
     }
   };
   translate.onerror = (text, error) => {
@@ -485,23 +499,18 @@ function AlpataSpeaks(text, targetName, isPrioritize) {
   speechSynthesis.speak(utter);
 }
 
-function DelayStreaming(sourceName, text, timeout, isSpeak, isTranslate, isInterim, isStream) {
+function DelayStreaming(sourceName, text, timeout, isInterim) {
   // OBSに送信するけど別に待たなくていい
-  if (isStream) {
-    obssocket.toOBS(text + emotion.getPrefix(),
-      document.querySelector(`input[name="obs-text-${sourceName}-source"]`).value || sourceName,
-      timeout, isInterim);
-  }
-  if (isSpeak) {
-    // 読み上げる
-    AlpataSpeaks(text, `voice-target-${sourceName}`, sourceName == 'native');
-  }
-  if (isTranslate) {
-    // 翻訳情報取得
-    const apikey = document.querySelector('input[name="gas-deploy-key"]').value || 'AKfycbx76Gd_ytJJxInNVqVMUhEXpzEL1zsZpb_vRw-Z7S3ZR6n-5dM'
-    const source = document.querySelector('input[name="gas-source"]').value || 'ja'
-    const target = document.querySelector('input[name="gas-target"]').value || 'en'
-    const target2 = document.querySelector('input[name="gas-target-2"]').value || ''
-    translate.exec(text, apikey, source, target, target2);
-  }
+  obssocket.toOBS(text + emotion.getPrefix(),
+    document.querySelector(`input[name="obs-text-${sourceName}-source"]`).value || sourceName,
+    timeout, isInterim);
+}
+
+function AlpacaTranslate(text) {
+  // 翻訳情報取得
+  const apikey = document.querySelector('input[name="gas-deploy-key"]').value || 'AKfycbx76Gd_ytJJxInNVqVMUhEXpzEL1zsZpb_vRw-Z7S3ZR6n-5dM'
+  const source = document.querySelector('input[name="gas-source"]').value || 'ja'
+  const target = document.querySelector('input[name="gas-target"]').value || 'en'
+  const target2 = document.querySelector('input[name="gas-target-2"]').value || ''
+  translate.exec(text, apikey, source, target, target2);
 }
